@@ -13,94 +13,62 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* Professional Deep Dark Theme */
         :root {
-            --bg-main: #121212;
-            --bg-panel: #1e1e1e;
-            --bg-input: #2a2a2a;
-            --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --accent: #81b64c; /* Premium Green */
-            --accent-hover: #96c963;
-            --danger: #fa412d;
-            --border: #333333;
-            --x-color: #81b64c;
-            --o-color: #e2c044;
+            --bg-main: #0d1117; --bg-panel: #161b22; --bg-input: #010409;
+            --text-main: #c9d1d9; --text-muted: #8b949e;
+            --accent: #238636; --accent-hover: #2ea043;
+            --danger: #da3633; --border: #30363d;
+            --x-color: #58a6ff; --o-color: #ff7b72;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-        
         body { background-color: var(--bg-main); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Screen Management */
-        .screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 20px; overflow-y: auto; }
+        .screen { display: none; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; width: 100%; padding: 20px; overflow-y: auto; padding-top: 80px; }
         .active-screen { display: flex; }
 
-        /* Top Header */
-        .header { width: 100%; padding: 15px 20px; background: var(--bg-panel); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: absolute; top: 0; left: 0; z-index: 10; }
-        .header h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-main); letter-spacing: 1px; }
+        /* Header & Nav */
+        .header { width: 100%; padding: 15px 20px; background: var(--bg-panel); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: fixed; top: 0; left: 0; z-index: 100; }
+        .header h1 { font-size: 1.5rem; font-weight: 700; color: #fff; }
+        
         .user-nav { display: flex; align-items: center; gap: 15px; display: none; }
-        .logout-btn { background: transparent; color: var(--text-muted); border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
-        .logout-btn:hover { color: var(--danger); }
+        .nav-avatar { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; object-fit: cover;}
+        
+        /* Tabs */
+        .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; background: var(--bg-panel); padding: 5px; border-radius: 8px; width: 100%; max-width: 500px; justify-content: center;}
+        .tab-btn { padding: 10px 15px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; font-weight: 600; border-radius: 6px; transition: 0.2s; }
+        .tab-btn.active { background: var(--border); color: #fff; }
 
-        /* Auth Card */
-        .card { background: var(--bg-panel); padding: 35px 30px; border-radius: 12px; width: 100%; max-width: 400px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 50px; }
-        .card h2 { text-align: center; margin-bottom: 25px; font-size: 1.8rem; }
-        
+        /* UI Elements */
+        .card { background: var(--bg-panel); padding: 30px; border-radius: 12px; width: 100%; max-width: 450px; border: 1px solid var(--border); margin-bottom: 20px; }
         .input-group { margin-bottom: 15px; width: 100%; }
-        .input-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-input); color: var(--text-main); outline: none; font-size: 1rem; transition: 0.2s; }
-        .input-group input:focus { border-color: var(--accent); }
+        .input-group input { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-input); color: #fff; outline: none; }
+        .input-group input:focus { border-color: var(--x-color); }
         
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; background: var(--accent); color: #fff; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; margin-bottom: 12px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer; margin-bottom: 10px; transition: 0.2s;}
         .btn:hover { background: var(--accent-hover); }
-        .btn-google { background: var(--text-main); color: #000; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-google:hover { background: #e0e0e0; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: var(--border); }
         .btn-danger { background: var(--danger); }
         
-        .error-msg { background: rgba(250, 65, 45, 0.1); color: var(--danger); padding: 10px; border-radius: 6px; font-size: 0.85rem; text-align: center; margin-bottom: 15px; display: none; border: 1px solid rgba(250, 65, 45, 0.3); }
-        .success-msg { background: rgba(129, 182, 76, 0.1); color: var(--accent); padding: 10px; border-radius: 6px; font-size: 0.85rem; text-align: center; margin-bottom: 15px; display: none; border: 1px solid rgba(129, 182, 76, 0.3); }
-
-        .auth-links { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 0.9rem; }
-        .auth-link { color: var(--text-muted); cursor: pointer; transition: 0.2s; }
-        .auth-link:hover { color: var(--text-main); }
-        .divider { text-align: center; margin: 15px 0; color: var(--text-muted); font-size: 0.85rem; }
-
-        /* Dashboard */
-        .dash-container { width: 100%; max-width: 600px; margin-top: 60px; }
-        .section-title { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 15px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        /* Error parsing */
+        .error-msg { background: rgba(218, 54, 51, 0.1); color: var(--danger); padding: 10px; border-radius: 6px; font-size: 0.85rem; text-align: center; margin-bottom: 15px; display: none; border: 1px solid rgba(218, 54, 51, 0.3); }
         
-        .time-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .time-btn { background: var(--bg-panel); border: 2px solid var(--border); border-radius: 10px; padding: 20px 10px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .time-btn:hover { border-color: var(--accent); background: var(--bg-input); }
-        .time-btn h3 { font-size: 1.3rem; margin-bottom: 5px; color: var(--text-main); }
-        
-        .invite-section { background: var(--bg-panel); padding: 25px; border-radius: 12px; border: 1px solid var(--border); }
-        .join-flex { display: flex; gap: 10px; margin-top: 15px; }
-        .join-flex input { flex: 1; padding: 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-input); color: white; outline: none; }
+        /* Lists (Friends, Requests) */
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; }
+        .list-info { display: flex; align-items: center; gap: 10px; }
+        .list-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .action-btns { display: flex; gap: 5px; }
+        .btn-small { padding: 6px 10px; font-size: 0.8rem; border-radius: 4px; border: none; cursor: pointer; font-weight: 600; color: white;}
 
         /* Game Board */
-        .game-header { width: 100%; max-width: 450px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; margin-top: 50px; }
-        
-        .player-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 450px; background: var(--bg-panel); padding: 15px 20px; border-radius: 10px; margin: 8px 0; border: 2px solid transparent; }
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; max-width: 400px; aspect-ratio: 1; background: var(--border); gap: 4px; border: 4px solid var(--border); border-radius: 8px; margin: 20px 0; }
+        .cell { background: var(--bg-main); display: flex; justify-content: center; align-items: center; font-size: 5rem; font-weight: 700; cursor: pointer; user-select: none;}
+        .cell.X { color: var(--x-color); } .cell.O { color: var(--o-color); }
+        .player-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; background: var(--bg-panel); padding: 10px 15px; border-radius: 8px; margin: 5px 0; border: 2px solid transparent; }
         .active-turn { border-color: var(--accent); }
-        .player-info { display: flex; flex-direction: column; }
-        .player-role { font-size: 0.8rem; color: var(--text-muted); }
-        .player-name { font-weight: 700; font-size: 1.1rem; }
-        .timer { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
-        /* Mobile Responsive Board */
-        .board { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; max-width: 450px; aspect-ratio: 1/1; background: var(--border); gap: 4px; border: 4px solid var(--border); border-radius: 8px; margin: 15px 0; }
-        .cell { background: var(--bg-main); display: flex; justify-content: center; align-items: center; font-size: clamp(3rem, 15vw, 6rem); font-weight: 700; cursor: pointer; user-select: none; }
-        .cell:hover { background: var(--bg-input); }
-        .cell.X { color: var(--x-color); }
-        .cell.O { color: var(--o-color); }
-
-        .notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 12px 25px; border-radius: 8px; font-weight: 700; display: none; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-
-        @media (max-width: 500px) {
-            .card { padding: 25px 20px; }
-            .time-controls { grid-template-columns: 1fr 1fr; }
-        }
+        .notification { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: var(--x-color); color: #000; padding: 10px 20px; border-radius: 20px; font-weight: 700; display: none; z-index: 1000; }
     </style>
 </head>
 <body>
@@ -110,96 +78,135 @@
     <div class="header">
         <h1>XO INFINITE</h1>
         <div class="user-nav" id="user-nav">
-            <span id="nav-username" style="font-weight: 600; font-size: 0.95rem;">Player</span>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div style="text-align: right; line-height: 1.2;">
+                <div id="nav-username" style="font-weight: 700; color: #fff;">User</div>
+                <div id="nav-tag" style="font-size: 0.75rem; color: var(--text-muted);">@tag</div>
+            </div>
+            <img id="nav-avatar" class="nav-avatar" src="https://ui-avatars.com/api/?name=User" onclick="switchTab('profile')">
         </div>
     </div>
 
     <!-- 1. AUTH SCREEN -->
-    <div id="screen-auth" class="screen active-screen">
+    <div id="screen-auth" class="screen active-screen" style="justify-content: center; padding-top: 20px;">
         <div class="card">
-            <h2 id="auth-title">Log In</h2>
-            
+            <h2 id="auth-title" style="text-align: center; margin-bottom: 20px;">Log In</h2>
             <div id="auth-error" class="error-msg"></div>
-            <div id="auth-success" class="success-msg"></div>
+            
+            <div id="signup-fields" style="display: none;">
+                <div class="input-group"><input type="text" id="reg-username" placeholder="Choose a Username (e.g. pro_gamer)"></div>
+            </div>
             
             <div class="input-group"><input type="email" id="email" placeholder="Email Address"></div>
             <div class="input-group"><input type="password" id="password" placeholder="Password"></div>
             
-            <div class="auth-links">
-                <span class="auth-link" onclick="handleForgotPassword()">Forgot Password?</span>
-                <span class="auth-link" id="toggle-auth-btn" onclick="toggleAuthMode()">Sign Up instead</span>
-            </div>
-
-            <button class="btn" id="btn-action" onclick="processEmailAuth()">Log In</button>
-            
-            <div class="divider">OR</div>
-            
-            <button class="btn btn-google" onclick="loginWithGoogle()">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google"> Continue with Google
-            </button>
+            <button class="btn" id="btn-action" onclick="processAuth()">Log In</button>
+            <div style="text-align: center; margin-top: 15px; font-size: 0.9rem; cursor: pointer; color: var(--x-color);" onclick="toggleAuthMode()" id="toggle-auth-text">Don't have an account? Sign Up</div>
         </div>
     </div>
 
-    <!-- 2. DASHBOARD SCREEN -->
+    <!-- 2. MAIN DASHBOARD (Tabs) -->
     <div id="screen-dashboard" class="screen">
-        <div class="dash-container">
-            <div class="section-title">Play a Friend</div>
-            <div class="time-controls">
-                <div class="time-btn" onclick="createRoom(15)"><h3>Bullet</h3><p style="color:var(--text-muted); font-size:0.85rem;">15 sec</p></div>
-                <div class="time-btn" onclick="createRoom(30)"><h3>Blitz</h3><p style="color:var(--text-muted); font-size:0.85rem;">30 sec</p></div>
-                <div class="time-btn" onclick="createRoom(45)"><h3>Rapid</h3><p style="color:var(--text-muted); font-size:0.85rem;">45 sec</p></div>
-                <div class="time-btn" onclick="createRoom(60)"><h3>Standard</h3><p style="color:var(--text-muted); font-size:0.85rem;">60 sec</p></div>
+        <div class="tab-menu">
+            <button class="tab-btn active" onclick="switchTab('play')" id="tab-play">Play</button>
+            <button class="tab-btn" onclick="switchTab('bots')" id="tab-bots">Bots</button>
+            <button class="tab-btn" onclick="switchTab('friends')" id="tab-friends">Friends</button>
+            <button class="tab-btn" onclick="switchTab('profile')" id="tab-profile">Profile</button>
+        </div>
+
+        <!-- PLAY TAB -->
+        <div id="view-play" class="card tab-view">
+            <h3 style="margin-bottom: 15px;">Live Multiplayer</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Create a room or join with a code.</p>
+            <button class="btn" onclick="createRoom()">Create Room (Live)</button>
+            
+            <div style="margin: 20px 0; border-top: 1px solid var(--border); padding-top: 20px;">
+                <input type="text" id="join-code" placeholder="Enter Room Code" style="width: 100%; padding: 10px; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 6px; margin-bottom: 10px;">
+                <button class="btn btn-outline" onclick="joinRoomFromInput()">Join Room</button>
+            </div>
+        </div>
+
+        <!-- BOTS TAB -->
+        <div id="view-bots" class="card tab-view" style="display: none;">
+            <h3 style="margin-bottom: 15px;">Practice vs Bots</h3>
+            <button class="btn btn-outline" style="border-color: #2ea043; color: #2ea043;" onclick="startBotMatch('beginner')">Beginner Bot</button>
+            <button class="btn btn-outline" style="border-color: #58a6ff; color: #58a6ff;" onclick="startBotMatch('intermediate')">Intermediate Bot</button>
+            <button class="btn btn-outline" style="border-color: #d2a8ff; color: #d2a8ff;" onclick="startBotMatch('pro')">Pro Bot</button>
+            <button class="btn btn-outline" style="border-color: #ff7b72; color: #ff7b72;" onclick="startBotMatch('legend')">Legend Bot</button>
+            <button class="btn" style="background: linear-gradient(90deg, #da3633, #8a2be2);" onclick="startBotMatch('immortal')">Immortal Bot (Unbeatable)</button>
+        </div>
+
+        <!-- FRIENDS TAB -->
+        <div id="view-friends" class="card tab-view" style="display: none; max-width: 500px;">
+            <h3 style="margin-bottom: 15px;">Add Friends ➕</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="friend-search" placeholder="Enter Username..." style="flex: 1; padding: 10px; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 6px;">
+                <button class="btn" style="width: auto; margin: 0;" onclick="sendFriendRequest()">Send</button>
             </div>
 
-            <div class="invite-section">
-                <div class="section-title" style="margin-bottom: 5px;">Join Match</div>
-                <p style="color:var(--text-muted); font-size:0.9rem;">Have an invite code? Enter it below.</p>
-                <div class="join-flex">
-                    <input type="text" id="join-code" placeholder="Enter Room ID">
-                    <button class="btn" style="width: auto; margin: 0; padding: 0 25px;" onclick="joinRoomFromInput()">Join</button>
-                </div>
+            <h4 style="margin: 15px 0 10px; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 5px;">Pending Requests</h4>
+            <div id="requests-list">
+                <!-- Dynamically populated -->
+                <p style="font-size: 0.85rem; color: var(--text-muted);">No pending requests.</p>
             </div>
+
+            <h4 style="margin: 25px 0 10px; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 5px;">My Friends</h4>
+            <div id="friends-list">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- PROFILE TAB -->
+        <div id="view-profile" class="card tab-view" style="display: none;">
+            <h3 style="margin-bottom: 15px;">Edit Profile</h3>
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img id="edit-avatar-preview" src="" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--border); object-fit: cover; margin-bottom: 10px;">
+                <input type="text" id="edit-avatar-url" placeholder="Paste Image URL here..." style="width: 100%; padding: 8px; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 6px; font-size: 0.8rem;">
+            </div>
+
+            <label style="font-size: 0.8rem; color: var(--text-muted);">Display Name</label>
+            <div class="input-group"><input type="text" id="edit-name" placeholder="Display Name"></div>
+            
+            <label style="font-size: 0.8rem; color: var(--text-muted);">Username (Unique)</label>
+            <div class="input-group"><input type="text" id="edit-username" placeholder="username" disabled style="opacity: 0.6;"></div>
+            
+            <button class="btn" onclick="saveProfile()">Save Changes</button>
+            <button class="btn btn-outline btn-danger" style="margin-top: 20px;" onclick="logout()">Log Out</button>
         </div>
     </div>
 
     <!-- 3. GAME SCREEN -->
-    <div id="screen-game" class="screen">
-        <div class="game-header">
+    <div id="screen-game" class="screen" style="justify-content: center;">
+        <div style="width: 100%; max-width: 400px; display: flex; justify-content: space-between; margin-bottom: 10px;">
             <span id="room-display" style="color: var(--text-muted); font-weight: 600;">ROOM: ---</span>
-            <button onclick="copyInviteLink()" style="background: var(--bg-panel); border: 1px solid var(--border); color: var(--text-main); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight:600;">Copy Invite</button>
+            <span id="copy-code-btn" onclick="copyInviteLink()" style="color: var(--x-color); cursor: pointer; font-size: 0.85rem; font-weight: 700;">Copy Code</span>
         </div>
 
         <div class="player-bar" id="opp-bar">
-            <div class="player-info">
-                <span class="player-role">Opponent (<span id="opp-symbol">O</span>)</span>
-                <span class="player-name" id="opp-name">Waiting...</span>
+            <div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Opponent (<span id="opp-symbol">O</span>)</div>
+                <div id="opp-name" style="font-weight: 700;">Waiting...</div>
             </div>
-            <div class="timer" id="opp-timer">--:--</div>
+            <img id="opp-avatar" src="https://ui-avatars.com/api/?name=O" style="width:30px; height:30px; border-radius:50%;">
         </div>
 
-        <div class="board" id="board">
-            <!-- JS populates cells -->
-        </div>
+        <div class="board" id="board"></div>
 
         <div class="player-bar" id="my-bar">
-            <div class="player-info">
-                <span class="player-role">You (<span id="my-symbol">X</span>)</span>
-                <span class="player-name" id="my-name">Me</span>
+            <div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">You (<span id="my-symbol">X</span>)</div>
+                <div id="my-name-game" style="font-weight: 700;">Me</div>
             </div>
-            <div class="timer" id="my-timer">--:--</div>
+            <img id="my-avatar" src="https://ui-avatars.com/api/?name=X" style="width:30px; height:30px; border-radius:50%;">
         </div>
 
-        <button class="btn btn-danger" style="max-width: 450px; margin-top: 25px;" onclick="leaveRoom()">Resign / Leave</button>
+        <button class="btn btn-danger" style="max-width: 400px; margin-top: 25px;" onclick="leaveMatch()">Resign / Leave</button>
     </div>
 
     <script>
         // =========================================================================
-        // 🔴🔴🔴 FIREBASE CONFIGURATION - YAHAN APNI KEYS DAALNI HAI 🔴🔴🔴
+        // STRICT FIREBASE CONFIGURATION (Provided by User)
         // =========================================================================
-        // Apne Firebase Console > Project Settings > Web App me jao aur wahan se 
-        // ye config copy karke in quotes "" ke andar paste karo.
-
         const firebaseConfig = {
             apiKey: "AIzaSyARdbrN_3V1Uk6KJ9JbHa6PJmv5Xtfv9Fw",
             authDomain: "xo-play-e654f.firebaseapp.com",
@@ -207,51 +214,43 @@
             projectId: "xo-play-e654f",
             storageBucket: "xo-play-e654f.firebasestorage.app",
             messagingSenderId: "745980316574",
-            appId: "1:745980316574:web:c9e34f46be9fb4c853648f"
+            appId: "1:745980316574:web:c9e34f46be9fb4c853648f",
+            measurementId: "G-82TTJV08M8"
         };
         
-        // DHYAN RAHE: Agar upar keys nahi daali, toh website pe errors aayenge!
-        // =========================================================================
-
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-        // System Variables
+        // App State
         let currentUser = null; 
+        let userProfile = null;
+        
+        // Game State
         let currentRoomId = null; 
         let myRole = null; 
         let gameActive = false;
         let currentTurn = 'X'; 
-        let timerInterval = null; 
         let currentRoomRef = null;
+        let localBoard = ["", "", "", "", "", "", "", "", ""];
+        
+        // Bot State
+        let isBotMatch = false;
+        let botDifficulty = '';
 
-        // UI Helpers
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
-            document.getElementById(id).classList.add('active-screen');
-        }
-
-        function showNoti(msg) {
-            const noti = document.getElementById('noti');
-            noti.innerText = msg; noti.style.display = 'block';
-            setTimeout(() => noti.style.display = 'none', 3000);
-        }
-
-        function showMsg(msg, isError = true) {
-            const err = document.getElementById('auth-error');
-            const suc = document.getElementById('auth-success');
-            err.style.display = 'none'; suc.style.display = 'none';
-            if (msg) {
-                if (isError) { err.innerText = msg; err.style.display = 'block'; }
-                else { suc.innerText = msg; suc.style.display = 'block'; }
-            }
+        // Helpers
+        function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen')); document.getElementById(id).classList.add('active-screen'); }
+        function showNoti(msg) { const noti = document.getElementById('noti'); noti.innerText = msg; noti.style.display = 'block'; setTimeout(() => noti.style.display = 'none', 3000); }
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-view').forEach(v => v.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`view-${tabId}`).style.display = 'block';
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            if(tabId === 'friends') loadFriendsData();
         }
 
         // ==========================================
-        // 1. ASLI FIREBASE AUTHENTICATION
+        // 1. AUTHENTICATION & ERROR PARSING
         // ==========================================
         let isLoginMode = true;
 
@@ -259,293 +258,407 @@
             isLoginMode = !isLoginMode;
             document.getElementById('auth-title').innerText = isLoginMode ? "Log In" : "Create Account";
             document.getElementById('btn-action').innerText = isLoginMode ? "Log In" : "Sign Up";
-            document.getElementById('toggle-auth-btn').innerText = isLoginMode ? "Sign Up instead" : "Log In instead";
-            showMsg(""); // Clear errors
+            document.getElementById('toggle-auth-text').innerText = isLoginMode ? "Don't have an account? Sign Up" : "Already have an account? Log In";
+            document.getElementById('signup-fields').style.display = isLoginMode ? 'none' : 'block';
+            document.getElementById('auth-error').style.display = 'none';
         }
 
-        function processEmailAuth() {
+        function processAuth() {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
+            const username = document.getElementById('reg-username').value.trim().toLowerCase();
+            const errBox = document.getElementById('auth-error');
             
-            if(!email || !pass) { showMsg("Please enter email and password."); return; }
-            showMsg("");
+            if(!email || !pass) { errBox.innerText = "Please fill all fields."; errBox.style.display = 'block'; return; }
+            if(!isLoginMode && !username) { errBox.innerText = "Username is required."; errBox.style.display = 'block'; return; }
+
             document.getElementById('btn-action').innerText = "Processing...";
 
             if(isLoginMode) {
-                // REAL FIREBASE LOGIN
-                auth.signInWithEmailAndPassword(email, pass).catch(error => {
-                    showMsg(error.message);
-                    document.getElementById('btn-action').innerText = "Log In";
-                });
+                auth.signInWithEmailAndPassword(email, pass).catch(handleAuthError);
             } else {
-                // REAL FIREBASE SIGNUP
-                auth.createUserWithEmailAndPassword(email, pass).catch(error => {
-                    showMsg(error.message);
-                    document.getElementById('btn-action').innerText = "Sign Up";
+                // Check if username is taken
+                db.ref('usernames/' + username).once('value', snap => {
+                    if(snap.exists()) {
+                        errBox.innerText = "Username already taken!"; errBox.style.display = 'block';
+                        document.getElementById('btn-action').innerText = "Sign Up";
+                    } else {
+                        auth.createUserWithEmailAndPassword(email, pass)
+                        .then(cred => {
+                            const defaultAvatar = `https://ui-avatars.com/api/?name=${username}&background=random`;
+                            db.ref('users/' + cred.user.uid).set({
+                                username: username, displayName: username, photoURL: defaultAvatar, uid: cred.user.uid
+                            });
+                            db.ref('usernames/' + username).set(cred.user.uid);
+                        }).catch(handleAuthError);
+                    }
                 });
             }
         }
 
-        function loginWithGoogle() {
-            // REAL FIREBASE GOOGLE LOGIN
-            auth.signInWithPopup(googleProvider).catch(error => showMsg(error.message));
-        }
-
-        function handleForgotPassword() {
-            const email = document.getElementById('email').value.trim();
-            if(!email) { showMsg("Enter your email address in the box first to reset password."); return; }
+        // 🔴 FIX FOR UGLY JSON ERROR (image_9ebd96.png)
+        function handleAuthError(error) {
+            const errBox = document.getElementById('auth-error');
+            let cleanMsg = error.message; // Fallback
             
-            // REAL FIREBASE FORGOT PASSWORD
-            auth.sendPasswordResetEmail(email).then(() => {
-                showMsg("Password reset link sent to your email!", false);
-            }).catch(error => showMsg(error.message));
+            // Map Firebase Auth Error Codes to Human Readable Text
+            if (error.code === 'auth/invalid-login-credentials' || error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+                cleanMsg = "Incorrect Email or Password. Please try again.";
+            } else if (error.code === 'auth/user-not-found') {
+                cleanMsg = "No account found with this email.";
+            } else if (error.code === 'auth/email-already-in-use') {
+                cleanMsg = "This email is already registered.";
+            }
+
+            errBox.innerText = cleanMsg;
+            errBox.style.display = 'block';
+            document.getElementById('btn-action').innerText = isLoginMode ? "Log In" : "Sign Up";
         }
 
-        function logout() {
-            auth.signOut();
-        }
+        function logout() { auth.signOut(); }
 
-        // Realtime Auth State Listener
         auth.onAuthStateChanged(user => {
             if(user) {
                 currentUser = user;
-                let displayName = user.displayName || user.email.split('@')[0];
-                document.getElementById('nav-username').innerText = displayName;
-                document.getElementById('my-name').innerText = displayName;
+                // Fetch User Profile
+                db.ref('users/' + user.uid).on('value', snap => {
+                    userProfile = snap.val();
+                    if(!userProfile) return;
+                    
+                    document.getElementById('nav-username').innerText = userProfile.displayName;
+                    document.getElementById('nav-tag').innerText = "@" + userProfile.username;
+                    document.getElementById('nav-avatar').src = userProfile.photoURL;
+                    
+                    // Populate Profile Tab
+                    document.getElementById('edit-name').value = userProfile.displayName;
+                    document.getElementById('edit-username').value = userProfile.username;
+                    document.getElementById('edit-avatar-url').value = userProfile.photoURL;
+                    document.getElementById('edit-avatar-preview').src = userProfile.photoURL;
+                });
+                
                 document.getElementById('user-nav').style.display = 'flex';
-                
-                // URL me room code check karna
-                const urlParams = new URLSearchParams(window.location.search);
-                const inviteRoom = urlParams.get('room');
-                
-                if(inviteRoom) { joinRoom(inviteRoom); } 
-                else { showScreen('screen-dashboard'); }
-                
+                showScreen('screen-dashboard');
             } else {
-                currentUser = null;
+                currentUser = null; userProfile = null;
                 document.getElementById('user-nav').style.display = 'none';
-                document.getElementById('btn-action').innerText = isLoginMode ? "Log In" : "Sign Up";
                 showScreen('screen-auth');
             }
         });
 
         // ==========================================
-        // 2. REAL MULTIPLAYER MATCHMAKING
+        // 2. PROFILE & FRIENDS SYSTEM
         // ==========================================
-        function createRoom(time) {
-            if(!currentUser) return;
-            // Generate simple 6 char room code
-            const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-            
-            const roomData = {
-                board: ["", "", "", "", "", "", "", "", ""],
-                turn: "X",
-                status: "waiting", // waiting, active, finished
-                timeControl: time,
-                playerX: { id: currentUser.uid, name: currentUser.displayName || currentUser.email.split('@')[0], time: time },
-                playerO: null
-            };
+        function saveProfile() {
+            const newName = document.getElementById('edit-name').value.trim();
+            const newAvatar = document.getElementById('edit-avatar-url').value.trim();
+            if(newName && currentUser) {
+                db.ref('users/' + currentUser.uid).update({ displayName: newName, photoURL: newAvatar });
+                showNoti("Profile Updated!");
+            }
+        }
 
-            db.ref('rooms/' + roomId).set(roomData).then(() => {
-                myRole = "X";
-                enterGameScreen(roomId, time);
-            }).catch(err => alert("Database Error: " + err.message));
+        function sendFriendRequest() {
+            const targetUsername = document.getElementById('friend-search').value.trim().toLowerCase();
+            if(!targetUsername || targetUsername === userProfile.username) return;
+
+            db.ref('usernames/' + targetUsername).once('value', snap => {
+                if(snap.exists()) {
+                    const targetUid = snap.val();
+                    db.ref(`friendRequests/${targetUid}/${currentUser.uid}`).set({
+                        uid: currentUser.uid, username: userProfile.username, photoURL: userProfile.photoURL, timestamp: Date.now()
+                    });
+                    showNoti("Friend Request Sent!");
+                    document.getElementById('friend-search').value = "";
+                } else {
+                    alert("User not found!");
+                }
+            });
+        }
+
+        function loadFriendsData() {
+            if(!currentUser) return;
+            
+            // Load Requests
+            db.ref(`friendRequests/${currentUser.uid}`).on('value', snap => {
+                const reqBox = document.getElementById('requests-list');
+                reqBox.innerHTML = '';
+                if(!snap.exists()) { reqBox.innerHTML = '<p style="font-size:0.85rem;color:var(--text-muted);">No pending requests.</p>'; return; }
+                
+                snap.forEach(child => {
+                    const req = child.val();
+                    reqBox.innerHTML += `
+                        <div class="list-item">
+                            <div class="list-info">
+                                <img src="${req.photoURL}">
+                                <div><div style="font-weight:600;font-size:0.9rem;">${req.username}</div></div>
+                            </div>
+                            <div class="action-btns">
+                                <button class="btn-small" style="background:var(--accent);" onclick="acceptRequest('${req.uid}', '${req.username}', '${req.photoURL}')">Accept</button>
+                                <button class="btn-small" style="background:var(--danger);" onclick="rejectRequest('${req.uid}')">✖</button>
+                            </div>
+                        </div>`;
+                });
+            });
+
+            // Load Friends
+            db.ref(`friends/${currentUser.uid}`).on('value', snap => {
+                const friendBox = document.getElementById('friends-list');
+                friendBox.innerHTML = '';
+                if(!snap.exists()) { friendBox.innerHTML = '<p style="font-size:0.85rem;color:var(--text-muted);">Add friends to see them here.</p>'; return; }
+                
+                snap.forEach(child => {
+                    const f = child.val();
+                    friendBox.innerHTML += `
+                        <div class="list-item">
+                            <div class="list-info">
+                                <img src="${f.photoURL}">
+                                <div><div style="font-weight:600;font-size:0.9rem;">${f.username}</div></div>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        function acceptRequest(uid, username, photoURL) {
+            // Add to my friends
+            db.ref(`friends/${currentUser.uid}/${uid}`).set({ uid, username, photoURL });
+            // Add me to their friends
+            db.ref(`friends/${uid}/${currentUser.uid}`).set({ uid: currentUser.uid, username: userProfile.username, photoURL: userProfile.photoURL });
+            // Remove request
+            rejectRequest(uid);
+            showNoti("Friend Added ➕");
+        }
+        function rejectRequest(uid) { db.ref(`friendRequests/${currentUser.uid}/${uid}`).remove(); }
+
+        // ==========================================
+        // 3. MULTIPLAYER ENGINE
+        // ==========================================
+        function createRoom() {
+            if(!currentUser) return;
+            const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+            isBotMatch = false;
+            
+            db.ref('rooms/' + roomId).set({
+                board: ["", "", "", "", "", "", "", "", ""], turn: "X", status: "waiting",
+                playerX: { id: currentUser.uid, name: userProfile.displayName, photoURL: userProfile.photoURL }
+            }).then(() => {
+                myRole = "X"; enterGameScreen(roomId);
+            });
         }
 
         function joinRoomFromInput() {
             const code = document.getElementById('join-code').value.trim().toUpperCase();
-            if(code) joinRoom(code);
-        }
-
-        function joinRoom(roomId) {
-            db.ref('rooms/' + roomId).once('value', snap => {
-                const data = snap.val();
-                if(!data) { alert("Room not found or expired!"); return; }
-                if(data.status !== "waiting" && data.playerO?.id !== currentUser.uid && data.playerX?.id !== currentUser.uid) { 
-                    alert("Match is already full or running."); return; 
-                }
-
-                if(data.playerX.id !== currentUser.uid) {
-                    // Main naya player hu, join as O
-                    myRole = "O";
-                    db.ref('rooms/' + roomId).update({
-                        status: "active",
-                        playerO: { id: currentUser.uid, name: currentUser.displayName || currentUser.email.split('@')[0], time: data.timeControl }
-                    });
-                } else {
-                    myRole = "X"; // Main host hu wapas aaya hu
-                }
-                
-                // URL saaf kar do
-                window.history.pushState({}, document.title, window.location.pathname);
-                enterGameScreen(roomId, data.timeControl);
-            });
-        }
-
-        function copyInviteLink() {
-            const link = window.location.origin + window.location.pathname + "?room=" + currentRoomId;
-            navigator.clipboard.writeText(link);
-            showNoti("Invite Link Copied!");
-        }
-
-        function leaveRoom() {
-            if(currentRoomRef) currentRoomRef.off(); 
-            if(currentRoomId && gameActive) {
-                // Agar match beech me choda, dusra jeetega
-                let winnerUid = myRole === "X" ? "O_WIN" : "X_WIN";
-                db.ref('rooms/' + currentRoomId).update({ status: "finished", winner: winnerUid }); 
+            if(code) {
+                db.ref('rooms/' + code).once('value', snap => {
+                    const data = snap.val();
+                    if(!data) { alert("Invalid Room Code"); return; }
+                    if(data.status !== "waiting" && data.playerX.id !== currentUser.uid) { alert("Room Full or Active"); return; }
+                    
+                    isBotMatch = false;
+                    if(data.playerX.id !== currentUser.uid) {
+                        myRole = "O";
+                        db.ref('rooms/' + code).update({
+                            status: "active",
+                            playerO: { id: currentUser.uid, name: userProfile.displayName, photoURL: userProfile.photoURL }
+                        });
+                    } else { myRole = "X"; }
+                    enterGameScreen(code);
+                });
             }
-            clearInterval(timerInterval);
-            currentRoomId = null;
-            showScreen('screen-dashboard');
         }
 
-        // ==========================================
-        // 3. STRICT GAME LOGIC & REALTIME SYNC
-        // ==========================================
-        function enterGameScreen(roomId, time) {
+        function copyInviteLink() { navigator.clipboard.writeText(currentRoomId); showNoti("Room Code Copied!"); }
+
+        function leaveMatch() {
+            if(currentRoomRef) currentRoomRef.off(); 
+            if(currentRoomId && !isBotMatch && gameActive) {
+                db.ref('rooms/' + currentRoomId).update({ status: "finished", winner: myRole === "X" ? "O_WIN" : "X_WIN" }); 
+            }
+            currentRoomId = null; showScreen('screen-dashboard');
+        }
+
+        function enterGameScreen(roomId) {
             currentRoomId = roomId;
             document.getElementById('room-display').innerText = "ROOM: " + roomId;
+            document.getElementById('copy-code-btn').style.display = isBotMatch ? 'none' : 'block';
+            
             document.getElementById('my-symbol').innerText = myRole;
-            document.getElementById('opp-symbol').innerText = myRole === "X" ? "O" : "X";
+            document.getElementById('my-name-game').innerText = userProfile.displayName;
+            document.getElementById('my-avatar').src = userProfile.photoURL;
+            
             showScreen('screen-game');
+            buildBoardUI();
             
-            initBoardUI();
-            
-            // Realtime Listener Lagana
-            if(currentRoomRef) currentRoomRef.off();
-            currentRoomRef = db.ref('rooms/' + roomId);
-            currentRoomRef.on('value', syncGameState);
-        }
-
-        function initBoardUI() {
-            const boardEl = document.getElementById("board");
-            boardEl.innerHTML = "";
-            for (let i = 0; i < 9; i++) {
-                const cell = document.createElement("div");
-                cell.className = "cell";
-                cell.setAttribute("data-index", i);
-                cell.onclick = () => makeMove(i);
-                boardEl.appendChild(cell);
+            if(!isBotMatch) {
+                if(currentRoomRef) currentRoomRef.off();
+                currentRoomRef = db.ref('rooms/' + roomId);
+                currentRoomRef.on('value', syncMultiplayerState);
             }
         }
 
-        let localBoard = [];
-        let localPlayerTime = 0;
-        let localOppTime = 0;
+        function buildBoardUI() {
+            const b = document.getElementById("board"); b.innerHTML = "";
+            for(let i=0; i<9; i++) {
+                const c = document.createElement("div"); c.className = "cell"; c.onclick = () => makeMove(i);
+                b.appendChild(c);
+            }
+        }
 
-        function syncGameState(snapshot) {
-            const data = snapshot.val();
-            if(!data) return;
-
+        function syncMultiplayerState(snap) {
+            const data = snap.val(); if(!data) return;
             localBoard = data.board || ["", "", "", "", "", "", "", "", ""];
-            currentTurn = data.turn;
-            gameActive = data.status === "active";
+            currentTurn = data.turn; gameActive = data.status === "active";
 
-            // Data Setup
             const oppData = myRole === "X" ? data.playerO : data.playerX;
-            const myData = myRole === "X" ? data.playerX : data.playerO;
+            document.getElementById('opp-name').innerText = oppData ? oppData.name : "Waiting...";
+            document.getElementById('opp-avatar').src = oppData ? oppData.photoURL : "https://ui-avatars.com/api/?name=O";
             
-            document.getElementById('opp-name').innerText = oppData ? oppData.name : "Waiting for friend...";
+            updateBoardVisuals();
+
+            if(data.status === "finished") {
+                gameActive = false;
+                if(data.winner === "draw") showNoti("Match Draw! 🤝");
+                else if(data.winner === currentUser.uid || data.winner === myRole + "_WIN") showNoti("You Won! 🎉");
+                else showNoti("You Lost! 💀");
+            }
+            updateTurnHighlight();
+        }
+
+        function makeMove(i) {
+            if(!gameActive || currentTurn !== myRole || localBoard[i] !== "") return;
             
-            // Board UI Update
+            localBoard[i] = myRole;
+            updateBoardVisuals();
+            
+            let status = "active"; let winner = null;
+            if(checkWin(localBoard, myRole)) { status = "finished"; winner = currentUser.uid; } 
+            else if(!localBoard.includes("")) { status = "finished"; winner = "draw"; }
+
+            if(isBotMatch) {
+                currentTurn = myRole === "X" ? "O" : "X";
+                updateTurnHighlight();
+                if(status === "finished") { handleBotGameOver(winner); return; }
+                setTimeout(botMakeMove, 500); // Bot delay
+            } else {
+                db.ref('rooms/' + currentRoomId).update({
+                    board: localBoard, turn: myRole === "X" ? "O" : "X", status: status, ...(winner && {winner})
+                });
+            }
+        }
+
+        function updateBoardVisuals() {
             const cells = document.querySelectorAll('.cell');
             localBoard.forEach((val, i) => {
                 cells[i].innerText = val;
-                cells[i].className = `cell ${val}`;
+                cells[i].className = "cell " + val;
             });
-
-            // Match Khatam hone ka check
-            if(data.status === "finished") {
-                gameActive = false;
-                clearInterval(timerInterval);
-                if(data.winner === "draw") showNoti("Match Draw! 🤝");
-                else if(data.winner === currentUser.uid || data.winner === myRole + "_WIN") showNoti("You Won! 🎉");
-                else showNoti("You Lost!");
-                return;
-            }
-
-            // Timer Sync
-            if(gameActive) {
-                localPlayerTime = myData.time;
-                localOppTime = oppData.time;
-                startLocalTimer();
-            }
-
-            // Turn Highlight
+        }
+        
+        function updateTurnHighlight() {
             document.getElementById('my-bar').classList.toggle('active-turn', currentTurn === myRole);
             document.getElementById('opp-bar').classList.toggle('active-turn', currentTurn !== myRole);
         }
 
-        function makeMove(index) {
-            // STRICT GLITCH FREE CHECK
-            if(!gameActive || currentTurn !== myRole || localBoard[index] !== "") return;
+        function checkWin(board, player) {
+            const w = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            return w.some(c => board[c[0]]===player && board[c[1]]===player && board[c[2]]===player);
+        }
 
-            // Fast Local UI Update
-            localBoard[index] = myRole;
-            const cells = document.querySelectorAll('.cell');
-            cells[index].innerText = myRole;
-            cells[index].classList.add(myRole);
+        // ==========================================
+        // 4. THE AI BOT ENGINE (Minimax & Randomizer)
+        // ==========================================
+        function startBotMatch(difficulty) {
+            isBotMatch = true; botDifficulty = difficulty;
+            currentRoomId = "BOT_ROOM"; myRole = "X"; currentTurn = "X"; gameActive = true;
+            localBoard = ["", "", "", "", "", "", "", "", ""];
             
-            // Local Win Check
-            let newStatus = "active";
-            let winner = null;
+            document.getElementById('opp-symbol').innerText = "O";
+            document.getElementById('opp-name').innerText = difficulty.toUpperCase() + " BOT 🤖";
+            document.getElementById('opp-avatar').src = "https://ui-avatars.com/api/?name=Bot&background=da3633&color=fff";
             
-            const winConditions = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            const isWin = winConditions.some(c => localBoard[c[0]]===myRole && localBoard[c[1]]===myRole && localBoard[c[2]]===myRole);
+            enterGameScreen("BOT_MATCH");
+            updateTurnHighlight();
+        }
+
+        function botMakeMove() {
+            if(!gameActive) return;
+            let moveIndex = -1;
+            const botPlayer = myRole === "X" ? "O" : "X";
             
-            if(isWin) {
-                newStatus = "finished";
-                winner = currentUser.uid;
-            } else if(!localBoard.includes("")) {
-                newStatus = "finished";
-                winner = "draw";
+            // Randomness factor based on difficulty
+            let randomChance = 0;
+            if(botDifficulty === 'beginner') randomChance = 1.0; // 100% random
+            if(botDifficulty === 'intermediate') randomChance = 0.5; // 50% random
+            if(botDifficulty === 'pro') randomChance = 0.2; // 20% random
+            if(botDifficulty === 'legend') randomChance = 0.05; // 5% random
+            if(botDifficulty === 'immortal') randomChance = 0.0; // 0% random (Unbeatable)
+
+            if(Math.random() < randomChance) {
+                // Random Move
+                let empty = [];
+                localBoard.forEach((v, i) => { if(v === "") empty.push(i); });
+                moveIndex = empty[Math.floor(Math.random() * empty.length)];
+            } else {
+                // Optimal Minimax Move
+                moveIndex = getBestMove(localBoard, botPlayer);
             }
 
-            // Database Update
-            const nextTurn = myRole === "X" ? "O" : "X";
-            let updates = { board: localBoard, turn: nextTurn, status: newStatus };
-            if(winner) updates.winner = winner;
-            
-            db.ref('rooms/' + currentRoomId).update(updates);
+            localBoard[moveIndex] = botPlayer;
+            updateBoardVisuals();
+
+            if(checkWin(localBoard, botPlayer)) { handleBotGameOver("BOT"); }
+            else if(!localBoard.includes("")) { handleBotGameOver("draw"); }
+            else { currentTurn = myRole; updateTurnHighlight(); }
         }
 
-        function startLocalTimer() {
-            clearInterval(timerInterval);
-            updateTimerUI();
-            
-            timerInterval = setInterval(() => {
-                if(!gameActive) { clearInterval(timerInterval); return; }
-                
-                if(currentTurn === myRole) {
-                    localPlayerTime--;
-                    if(localPlayerTime <= 0) handleTimeout(currentUser.uid);
-                } else {
-                    localOppTime--;
-                }
-                updateTimerUI();
-            }, 1000);
-        }
-
-        function updateTimerUI() {
-            const formatTime = (secs) => {
-                let m = Math.floor(secs/60); let s = secs%60;
-                return `${m < 10 ? '0':''}${m}:${s < 10 ? '0':''}${s}`;
-            };
-            document.getElementById('my-timer').innerText = formatTime(Math.max(0, localPlayerTime));
-            document.getElementById('opp-timer').innerText = formatTime(Math.max(0, localOppTime));
-        }
-
-        function handleTimeout(loserUid) {
-            if(!gameActive) return;
+        function handleBotGameOver(winner) {
             gameActive = false;
-            clearInterval(timerInterval);
-            
-            db.ref('rooms/' + currentRoomId).once('value', snap => {
-                const d = snap.val();
-                let winnerUid = d.playerX.id === loserUid ? d.playerO.id : d.playerX.id;
-                db.ref('rooms/' + currentRoomId).update({ status: "finished", winner: winnerUid });
-            });
+            if(winner === "draw") showNoti("Match Draw! 🤝");
+            else if(winner === "BOT") showNoti("Bot Won! 💀");
+            else showNoti("You Won! 🎉");
+        }
+
+        // --- Unbeatable Minimax Algorithm ---
+        function getBestMove(board, player) {
+            let bestScore = -Infinity; let move = -1;
+            for(let i=0; i<9; i++) {
+                if(board[i] === "") {
+                    board[i] = player;
+                    let score = minimax(board, 0, false, player);
+                    board[i] = "";
+                    if(score > bestScore) { bestScore = score; move = i; }
+                }
+            }
+            return move;
+        }
+
+        function minimax(board, depth, isMaximizing, botPlayer) {
+            const humanPlayer = botPlayer === "X" ? "O" : "X";
+            if(checkWin(board, botPlayer)) return 10 - depth;
+            if(checkWin(board, humanPlayer)) return depth - 10;
+            if(!board.includes("")) return 0;
+
+            if(isMaximizing) {
+                let bestScore = -Infinity;
+                for(let i=0; i<9; i++) {
+                    if(board[i] === "") {
+                        board[i] = botPlayer;
+                        bestScore = Math.max(bestScore, minimax(board, depth + 1, false, botPlayer));
+                        board[i] = "";
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for(let i=0; i<9; i++) {
+                    if(board[i] === "") {
+                        board[i] = humanPlayer;
+                        bestScore = Math.min(bestScore, minimax(board, depth + 1, true, botPlayer));
+                        board[i] = "";
+                    }
+                }
+                return bestScore;
+            }
         }
     </script>
 </body>
