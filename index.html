@@ -67,14 +67,12 @@
         .btn-danger:hover { background: var(--danger-hover); }
         .btn-random { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border: none; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
         .btn-random:hover { background: linear-gradient(135deg, #4f46e5, #9333ea); transform: translateY(-2px); }
-        .btn-google { background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-google:hover { background: #e0e0e0; }
 
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; }
         .list-info { display: flex; align-items: center; gap: 12px; }
         .list-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
         
-        /* Game Screen Layout */
+        /* Game Screen Layout (PC vs Mobile) */
         .game-layout { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 450px; }
         .board-col { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .chat-col { display: flex; flex-direction: column; width: 100%; height: 280px; }
@@ -87,7 +85,7 @@
             .chat-col { width: 350px; height: 500px; margin-top: 45px;}
         }
 
-        /* Board */
+        /* Board & Player Bars */
         .board { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; aspect-ratio: 1; background: var(--border); gap: 4px; border: 4px solid var(--border); border-radius: 12px; margin: 15px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
         .cell { background: var(--bg-main); display: flex; justify-content: center; align-items: center; font-size: 5.5rem; font-family: 'Outfit', sans-serif; font-weight: 800; cursor: pointer; user-select: none; transition: 0.1s;}
         .cell:hover { background: var(--bg-input); }
@@ -168,7 +166,7 @@
                 <div id="auth-error" class="error-msg"></div>
                 
                 <div id="signup-fields" style="display: none;">
-                    <div class="input-group"><input type="text" id="reg-username" placeholder="Username (Min 3 chars, letters/numbers only)"></div>
+                    <div class="input-group"><input type="text" id="reg-username" placeholder="Username (Min 3 letters/numbers)"></div>
                 </div>
                 
                 <div class="input-group"><input type="email" id="email" placeholder="Email Address"></div>
@@ -183,8 +181,7 @@
                 
                 <div style="text-align: center; margin: 15px 0; color: var(--border); font-size: 0.85rem;">OR</div>
                 
-                <!-- RESTORED GOOGLE LOGIN -->
-                <button class="btn btn-google" onclick="loginWithGoogle()">
+                <button class="btn" style="background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="loginWithGoogle()">
                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google"> Continue with Google
                 </button>
             </div>
@@ -231,7 +228,7 @@
                 <div id="friends-list"></div>
             </div>
 
-            <!-- PROFILE TAB -->
+            <!-- PROFILE TAB (RESTORED WITH ALL FEATURES) -->
             <div id="view-profile" class="card tab-view" style="display: none;">
                 <h3 style="margin-bottom: 20px; text-align: center;">Edit Profile</h3>
                 
@@ -365,8 +362,6 @@
         function handleResize() {
             const isDesktop = window.innerWidth >= 850;
             document.getElementById('desktop-nav').style.display = isDesktop ? 'flex' : 'none';
-            // Assuming mobile tabs was removed in my mega update for a cleaner bottom bar, 
-            // but if it's there, toggle it.
         }
         window.addEventListener('resize', handleResize); handleResize();
 
@@ -467,13 +462,24 @@
         function loginWithGoogle() {
             auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
                 return auth.signInWithPopup(googleProvider);
+            }).then((result) => {
+                const user = result.user;
+                const emailPrefix = user.email.split('@')[0].replace(/[^a-z0-9_]/g, '');
+                db.ref('users/' + user.uid).once('value').then(snap => {
+                    if(!snap.exists()) {
+                        db.ref('users/' + user.uid).set({
+                            username: emailPrefix, displayName: user.displayName || "Player", photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${emailPrefix}`, uid: user.uid, points: 0, bio: "", gender: "", flag: ""
+                        });
+                        db.ref('usernames/' + emailPrefix).set(user.uid);
+                    }
+                });
             }).catch(handleAuthError);
         }
 
         function handleForgotPassword() {
             const email = document.getElementById('email').value.trim();
             const errBox = document.getElementById('auth-error');
-            if(!email) { errBox.innerText = "Enter your email in the box first."; errBox.style.display = 'block'; return; }
+            if(!email) { errBox.innerText = "Enter your email in the box first to reset password."; errBox.style.display = 'block'; return; }
             auth.sendPasswordResetEmail(email)
             .then(() => { errBox.innerText = "Password reset link sent to your email!"; errBox.style.color = "var(--accent)"; errBox.style.display = 'block'; })
             .catch(handleAuthError);
@@ -481,20 +487,13 @@
 
         function logout() { auth.signOut(); }
 
-        // THE GLITCH FIX: Ensure we handle null profiles (Google Login / Network interruptions)
+        // GLITCH FIX: Ensure we handle null profiles (Google Login delays / Interruptions) safely.
         auth.onAuthStateChanged(user => {
             if(user) {
                 currentUser = user;
                 db.ref('users/' + user.uid).on('value', snap => {
                     userProfile = snap.val(); 
-                    
-                    // Auto-create missing profile (Fixes infinite loading on Google Auth)
-                    if(!userProfile) {
-                        let fallbackUser = "player_" + Math.floor(Math.random() * 99999);
-                        userProfile = { username: fallbackUser, displayName: user.displayName || "Player", photoURL: user.photoURL || "https://ui-avatars.com/api/?name=P", uid: user.uid, points: 0, bio: "", gender: "", flag: "" };
-                        db.ref('users/' + user.uid).set(userProfile);
-                        db.ref('usernames/' + fallbackUser).set(user.uid);
-                    }
+                    if(!userProfile) return; // Wait for profile to be safely created by the auth functions above
                     
                     document.getElementById('nav-username').innerText = userProfile.displayName;
                     document.getElementById('nav-tag').innerText = "@" + userProfile.username;
@@ -909,4 +908,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
