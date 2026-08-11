@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>XO Infinite</title>
     
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#238636">
+    <link rel="apple-touch-icon" href="icon.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <!-- Real Firebase SDKs (v8) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -27,19 +31,16 @@
         .screen { display: none; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; width: 100%; padding: 20px; overflow-y: auto; padding-top: 80px; }
         .active-screen { display: flex; }
 
-        /* Header & Nav */
         .header { width: 100%; padding: 15px 20px; background: var(--bg-panel); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: fixed; top: 0; left: 0; z-index: 100; }
         .header h1 { font-size: 1.5rem; font-weight: 700; color: #fff; }
         
         .user-nav { display: flex; align-items: center; gap: 15px; display: none; }
         .nav-avatar { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; object-fit: cover;}
         
-        /* Tabs */
         .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; background: var(--bg-panel); padding: 5px; border-radius: 8px; width: 100%; max-width: 500px; justify-content: center;}
         .tab-btn { padding: 10px 15px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; font-weight: 600; border-radius: 6px; transition: 0.2s; }
         .tab-btn.active { background: var(--border); color: #fff; }
 
-        /* UI Elements */
         .card { background: var(--bg-panel); padding: 30px; border-radius: 12px; width: 100%; max-width: 450px; border: 1px solid var(--border); margin-bottom: 20px; }
         .input-group { margin-bottom: 15px; width: 100%; }
         .input-group input { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-input); color: #fff; outline: none; }
@@ -50,18 +51,17 @@
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
         .btn-outline:hover { background: var(--border); }
         .btn-danger { background: var(--danger); }
+        .btn-google { background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-google:hover { background: #e0e0e0; }
         
-        /* Error parsing */
         .error-msg { background: rgba(218, 54, 51, 0.1); color: var(--danger); padding: 10px; border-radius: 6px; font-size: 0.85rem; text-align: center; margin-bottom: 15px; display: none; border: 1px solid rgba(218, 54, 51, 0.3); }
         
-        /* Lists (Friends, Requests) */
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; }
         .list-info { display: flex; align-items: center; gap: 10px; }
         .list-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
         .action-btns { display: flex; gap: 5px; }
         .btn-small { padding: 6px 10px; font-size: 0.8rem; border-radius: 4px; border: none; cursor: pointer; font-weight: 600; color: white;}
 
-        /* Game Board */
         .board { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; max-width: 400px; aspect-ratio: 1; background: var(--border); gap: 4px; border: 4px solid var(--border); border-radius: 8px; margin: 20px 0; }
         .cell { background: var(--bg-main); display: flex; justify-content: center; align-items: center; font-size: 5rem; font-weight: 700; cursor: pointer; user-select: none;}
         .cell.X { color: var(--x-color); } .cell.O { color: var(--o-color); }
@@ -69,6 +69,11 @@
         .active-turn { border-color: var(--accent); }
 
         .notification { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: var(--x-color); color: #000; padding: 10px 20px; border-radius: 20px; font-weight: 700; display: none; z-index: 1000; }
+        
+        .loader { border: 4px solid var(--border); border-top: 4px solid var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #install-btn { display: none; background: var(--x-color); color: #000; padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -77,17 +82,26 @@
 
     <div class="header">
         <h1>XO INFINITE</h1>
-        <div class="user-nav" id="user-nav">
-            <div style="text-align: right; line-height: 1.2;">
-                <div id="nav-username" style="font-weight: 700; color: #fff;">User</div>
-                <div id="nav-tag" style="font-size: 0.75rem; color: var(--text-muted);">@tag</div>
+        <div style="display:flex; gap: 15px; align-items: center;">
+            <button id="install-btn" onclick="installApp()">⬇ Install App</button>
+            <div class="user-nav" id="user-nav">
+                <div style="text-align: right; line-height: 1.2;">
+                    <div id="nav-username" style="font-weight: 700; color: #fff;">User</div>
+                    <div id="nav-tag" style="font-size: 0.75rem; color: var(--text-muted);">@tag</div>
+                </div>
+                <img id="nav-avatar" class="nav-avatar" src="" onclick="switchTab('profile')">
             </div>
-            <img id="nav-avatar" class="nav-avatar" src="https://ui-avatars.com/api/?name=User" onclick="switchTab('profile')">
         </div>
     </div>
 
-    <!-- 1. AUTH SCREEN -->
-    <div id="screen-auth" class="screen active-screen" style="justify-content: center; padding-top: 20px;">
+    <!-- 0. LOADING SCREEN -->
+    <div id="screen-loading" class="screen active-screen" style="justify-content: center; padding-top: 20px;">
+        <div class="loader"></div>
+        <h3 style="color: var(--text-muted);">Connecting to server...</h3>
+    </div>
+
+    <!-- 1. AUTH SCREEN (Fully Restored) -->
+    <div id="screen-auth" class="screen" style="justify-content: center; padding-top: 20px;">
         <div class="card">
             <h2 id="auth-title" style="text-align: center; margin-bottom: 20px;">Log In</h2>
             <div id="auth-error" class="error-msg"></div>
@@ -99,12 +113,24 @@
             <div class="input-group"><input type="email" id="email" placeholder="Email Address"></div>
             <div class="input-group"><input type="password" id="password" placeholder="Password"></div>
             
+            <!-- Restored Forgot Password -->
+            <div style="text-align: right; margin-top: -10px; margin-bottom: 15px;">
+                <span style="font-size: 0.85rem; color: var(--x-color); cursor: pointer;" onclick="handleForgotPassword()">Forgot Password?</span>
+            </div>
+            
             <button class="btn" id="btn-action" onclick="processAuth()">Log In</button>
-            <div style="text-align: center; margin-top: 15px; font-size: 0.9rem; cursor: pointer; color: var(--x-color);" onclick="toggleAuthMode()" id="toggle-auth-text">Don't have an account? Sign Up</div>
+            <div style="text-align: center; margin: 15px 0; font-size: 0.9rem; cursor: pointer; color: var(--text-muted);" onclick="toggleAuthMode()" id="toggle-auth-text">Don't have an account? <span style="color:var(--x-color);">Sign Up</span></div>
+            
+            <div style="text-align: center; margin: 15px 0; color: var(--border); font-size: 0.85rem;">OR</div>
+            
+            <!-- Restored Google Login -->
+            <button class="btn btn-google" onclick="loginWithGoogle()">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google"> Continue with Google
+            </button>
         </div>
     </div>
 
-    <!-- 2. MAIN DASHBOARD (Tabs) -->
+    <!-- 2. MAIN DASHBOARD -->
     <div id="screen-dashboard" class="screen">
         <div class="tab-menu">
             <button class="tab-btn active" onclick="switchTab('play')" id="tab-play">Play</button>
@@ -145,19 +171,16 @@
 
             <h4 style="margin: 15px 0 10px; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 5px;">Pending Requests</h4>
             <div id="requests-list">
-                <!-- Dynamically populated -->
                 <p style="font-size: 0.85rem; color: var(--text-muted);">No pending requests.</p>
             </div>
 
             <h4 style="margin: 25px 0 10px; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 5px;">My Friends</h4>
-            <div id="friends-list">
-                <!-- Dynamically populated -->
-            </div>
+            <div id="friends-list"></div>
         </div>
 
         <!-- PROFILE TAB -->
         <div id="view-profile" class="card tab-view" style="display: none;">
-            <h3 style="margin-bottom: 15px;">Edit Profile</h3>
+            <h3 style="margin-bottom: 15px;">Profile Settings</h3>
             
             <div style="text-align: center; margin-bottom: 20px;">
                 <img id="edit-avatar-preview" src="" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--border); object-fit: cover; margin-bottom: 10px;">
@@ -187,7 +210,7 @@
                 <div style="font-size: 0.75rem; color: var(--text-muted);">Opponent (<span id="opp-symbol">O</span>)</div>
                 <div id="opp-name" style="font-weight: 700;">Waiting...</div>
             </div>
-            <img id="opp-avatar" src="https://ui-avatars.com/api/?name=O" style="width:30px; height:30px; border-radius:50%;">
+            <img id="opp-avatar" src="https://ui-avatars.com/api/?name=O" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
         </div>
 
         <div class="board" id="board"></div>
@@ -197,15 +220,39 @@
                 <div style="font-size: 0.75rem; color: var(--text-muted);">You (<span id="my-symbol">X</span>)</div>
                 <div id="my-name-game" style="font-weight: 700;">Me</div>
             </div>
-            <img id="my-avatar" src="https://ui-avatars.com/api/?name=X" style="width:30px; height:30px; border-radius:50%;">
+            <img id="my-avatar" src="https://ui-avatars.com/api/?name=X" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
         </div>
 
         <button class="btn btn-danger" style="max-width: 400px; margin-top: 25px;" onclick="leaveMatch()">Resign / Leave</button>
     </div>
 
     <script>
+        // PWA App Install Logic
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed', err));
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-btn').style.display = 'block';
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.getElementById('install-btn').style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
         // =========================================================================
-        // STRICT FIREBASE CONFIGURATION (Provided by User)
+        // STRICT FIREBASE CONFIGURATION
         // =========================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyARdbrN_3V1Uk6KJ9JbHa6PJmv5Xtfv9Fw",
@@ -221,25 +268,24 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-        // App State
+        // System State
         let currentUser = null; 
         let userProfile = null;
-        
-        // Game State
         let currentRoomId = null; 
         let myRole = null; 
         let gameActive = false;
         let currentTurn = 'X'; 
         let currentRoomRef = null;
         let localBoard = ["", "", "", "", "", "", "", "", ""];
-        
-        // Bot State
         let isBotMatch = false;
         let botDifficulty = '';
 
-        // Helpers
-        function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen')); document.getElementById(id).classList.add('active-screen'); }
+        function showScreen(id) { 
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen')); 
+            document.getElementById(id).classList.add('active-screen'); 
+        }
         function showNoti(msg) { const noti = document.getElementById('noti'); noti.innerText = msg; noti.style.display = 'block'; setTimeout(() => noti.style.display = 'none', 3000); }
         function switchTab(tabId) {
             document.querySelectorAll('.tab-view').forEach(v => v.style.display = 'none');
@@ -250,7 +296,7 @@
         }
 
         // ==========================================
-        // 1. AUTHENTICATION & ERROR PARSING
+        // 1. AUTHENTICATION (REFRESH GLITCH FIXED)
         // ==========================================
         let isLoginMode = true;
 
@@ -258,11 +304,23 @@
             isLoginMode = !isLoginMode;
             document.getElementById('auth-title').innerText = isLoginMode ? "Log In" : "Create Account";
             document.getElementById('btn-action').innerText = isLoginMode ? "Log In" : "Sign Up";
-            document.getElementById('toggle-auth-text').innerText = isLoginMode ? "Don't have an account? Sign Up" : "Already have an account? Log In";
+            document.getElementById('toggle-auth-text').innerHTML = isLoginMode ? "Don't have an account? <span style='color:var(--x-color);'>Sign Up</span>" : "Already have an account? <span style='color:var(--x-color);'>Log In</span>";
             document.getElementById('signup-fields').style.display = isLoginMode ? 'none' : 'block';
             document.getElementById('auth-error').style.display = 'none';
         }
 
+        function handleAuthError(error) {
+            const errBox = document.getElementById('auth-error');
+            let cleanMsg = "Authentication failed.";
+            if (error.code.includes('invalid-credential') || error.code.includes('wrong-password') || error.code.includes('invalid-login-credentials')) { cleanMsg = "Incorrect Email or Password."; } 
+            else if (error.code.includes('user-not-found')) { cleanMsg = "Account not found."; }
+            else if (error.code.includes('email-already-in-use')) { cleanMsg = "Email already registered."; }
+            else { cleanMsg = error.message; }
+            errBox.innerText = cleanMsg; errBox.style.display = 'block';
+            document.getElementById('btn-action').innerText = isLoginMode ? "Log In" : "Sign Up";
+        }
+
+        // The Fix: Force Local Persistence before any auth action
         function processAuth() {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
@@ -270,84 +328,99 @@
             const errBox = document.getElementById('auth-error');
             
             if(!email || !pass) { errBox.innerText = "Please fill all fields."; errBox.style.display = 'block'; return; }
-            if(!isLoginMode && !username) { errBox.innerText = "Username is required."; errBox.style.display = 'block'; return; }
-
             document.getElementById('btn-action').innerText = "Processing...";
 
-            if(isLoginMode) {
-                auth.signInWithEmailAndPassword(email, pass).catch(handleAuthError);
-            } else {
-                // Check if username is taken
-                db.ref('usernames/' + username).once('value', snap => {
-                    if(snap.exists()) {
-                        errBox.innerText = "Username already taken!"; errBox.style.display = 'block';
-                        document.getElementById('btn-action').innerText = "Sign Up";
-                    } else {
-                        auth.createUserWithEmailAndPassword(email, pass)
-                        .then(cred => {
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .then(() => {
+                if(isLoginMode) {
+                    return auth.signInWithEmailAndPassword(email, pass);
+                } else {
+                    if(!username) { throw new Error("Username required."); }
+                    return db.ref('usernames/' + username).once('value').then(snap => {
+                        if(snap.exists()) { throw new Error("Username already taken!"); }
+                        return auth.createUserWithEmailAndPassword(email, pass).then(cred => {
                             const defaultAvatar = `https://ui-avatars.com/api/?name=${username}&background=random`;
                             db.ref('users/' + cred.user.uid).set({
                                 username: username, displayName: username, photoURL: defaultAvatar, uid: cred.user.uid
                             });
                             db.ref('usernames/' + username).set(cred.user.uid);
-                        }).catch(handleAuthError);
-                    }
-                });
-            }
+                        });
+                    });
+                }
+            })
+            .catch(handleAuthError);
         }
 
-        // 🔴 FIX FOR UGLY JSON ERROR (image_9ebd96.png)
-        function handleAuthError(error) {
-            const errBox = document.getElementById('auth-error');
-            let cleanMsg = error.message; // Fallback
-            
-            // Map Firebase Auth Error Codes to Human Readable Text
-            if (error.code === 'auth/invalid-login-credentials' || error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
-                cleanMsg = "Incorrect Email or Password. Please try again.";
-            } else if (error.code === 'auth/user-not-found') {
-                cleanMsg = "No account found with this email.";
-            } else if (error.code === 'auth/email-already-in-use') {
-                cleanMsg = "This email is already registered.";
-            }
+        // Restored Google Login
+        function loginWithGoogle() {
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .then(() => {
+                return auth.signInWithPopup(googleProvider);
+            })
+            .then((result) => {
+                // If new user via Google, create basic profile
+                const user = result.user;
+                const emailPrefix = user.email.split('@')[0];
+                db.ref('users/' + user.uid).once('value').then(snap => {
+                    if(!snap.exists()) {
+                        db.ref('users/' + user.uid).set({
+                            username: emailPrefix, displayName: user.displayName, photoURL: user.photoURL, uid: user.uid
+                        });
+                    }
+                });
+            })
+            .catch(handleAuthError);
+        }
 
-            errBox.innerText = cleanMsg;
-            errBox.style.display = 'block';
-            document.getElementById('btn-action').innerText = isLoginMode ? "Log In" : "Sign Up";
+        // Restored Forgot Password
+        function handleForgotPassword() {
+            const email = document.getElementById('email').value.trim();
+            const errBox = document.getElementById('auth-error');
+            if(!email) { 
+                errBox.innerText = "Enter your email in the box first."; 
+                errBox.style.display = 'block'; 
+                return; 
+            }
+            auth.sendPasswordResetEmail(email)
+            .then(() => {
+                errBox.innerText = "Password reset link sent to your email!";
+                errBox.style.color = "var(--accent)";
+                errBox.style.display = 'block';
+            })
+            .catch(handleAuthError);
         }
 
         function logout() { auth.signOut(); }
 
+        // Session Listener - Will transition away from loading screen appropriately
         auth.onAuthStateChanged(user => {
             if(user) {
                 currentUser = user;
-                // Fetch User Profile
                 db.ref('users/' + user.uid).on('value', snap => {
                     userProfile = snap.val();
-                    if(!userProfile) return;
+                    if(!userProfile) return; // Wait until profile creates
                     
                     document.getElementById('nav-username').innerText = userProfile.displayName;
                     document.getElementById('nav-tag').innerText = "@" + userProfile.username;
                     document.getElementById('nav-avatar').src = userProfile.photoURL;
                     
-                    // Populate Profile Tab
                     document.getElementById('edit-name').value = userProfile.displayName;
                     document.getElementById('edit-username').value = userProfile.username;
                     document.getElementById('edit-avatar-url').value = userProfile.photoURL;
                     document.getElementById('edit-avatar-preview').src = userProfile.photoURL;
+                    
+                    document.getElementById('user-nav').style.display = 'flex';
+                    showScreen('screen-dashboard');
                 });
-                
-                document.getElementById('user-nav').style.display = 'flex';
-                showScreen('screen-dashboard');
             } else {
                 currentUser = null; userProfile = null;
                 document.getElementById('user-nav').style.display = 'none';
+                document.getElementById('btn-action').innerText = isLoginMode ? "Log In" : "Sign Up";
                 showScreen('screen-auth');
             }
         });
 
-        // ==========================================
-        // 2. PROFILE & FRIENDS SYSTEM
-        // ==========================================
+        // Profile Update
         function saveProfile() {
             const newName = document.getElementById('edit-name').value.trim();
             const newAvatar = document.getElementById('edit-avatar-url').value.trim();
@@ -357,6 +430,9 @@
             }
         }
 
+        // ==========================================
+        // 2. FRIENDS SYSTEM
+        // ==========================================
         function sendFriendRequest() {
             const targetUsername = document.getElementById('friend-search').value.trim().toLowerCase();
             if(!targetUsername || targetUsername === userProfile.username) return;
@@ -390,7 +466,7 @@
                         <div class="list-item">
                             <div class="list-info">
                                 <img src="${req.photoURL}">
-                                <div><div style="font-weight:600;font-size:0.9rem;">${req.username}</div></div>
+                                <div><div style="font-weight:600;font-size:0.9rem;color:#fff;">${req.username}</div></div>
                             </div>
                             <div class="action-btns">
                                 <button class="btn-small" style="background:var(--accent);" onclick="acceptRequest('${req.uid}', '${req.username}', '${req.photoURL}')">Accept</button>
@@ -412,7 +488,7 @@
                         <div class="list-item">
                             <div class="list-info">
                                 <img src="${f.photoURL}">
-                                <div><div style="font-weight:600;font-size:0.9rem;">${f.username}</div></div>
+                                <div><div style="font-weight:600;font-size:0.9rem;color:#fff;">${f.username}</div></div>
                             </div>
                         </div>`;
                 });
@@ -420,15 +496,13 @@
         }
 
         function acceptRequest(uid, username, photoURL) {
-            // Add to my friends
             db.ref(`friends/${currentUser.uid}/${uid}`).set({ uid, username, photoURL });
-            // Add me to their friends
             db.ref(`friends/${uid}/${currentUser.uid}`).set({ uid: currentUser.uid, username: userProfile.username, photoURL: userProfile.photoURL });
-            // Remove request
             rejectRequest(uid);
             showNoti("Friend Added ➕");
         }
         function rejectRequest(uid) { db.ref(`friendRequests/${currentUser.uid}/${uid}`).remove(); }
+
 
         // ==========================================
         // 3. MULTIPLAYER ENGINE
@@ -441,9 +515,7 @@
             db.ref('rooms/' + roomId).set({
                 board: ["", "", "", "", "", "", "", "", ""], turn: "X", status: "waiting",
                 playerX: { id: currentUser.uid, name: userProfile.displayName, photoURL: userProfile.photoURL }
-            }).then(() => {
-                myRole = "X"; enterGameScreen(roomId);
-            });
+            }).then(() => { myRole = "X"; enterGameScreen(roomId); });
         }
 
         function joinRoomFromInput() {
@@ -538,7 +610,7 @@
                 currentTurn = myRole === "X" ? "O" : "X";
                 updateTurnHighlight();
                 if(status === "finished") { handleBotGameOver(winner); return; }
-                setTimeout(botMakeMove, 500); // Bot delay
+                setTimeout(botMakeMove, 500); 
             } else {
                 db.ref('rooms/' + currentRoomId).update({
                     board: localBoard, turn: myRole === "X" ? "O" : "X", status: status, ...(winner && {winner})
@@ -565,7 +637,7 @@
         }
 
         // ==========================================
-        // 4. THE AI BOT ENGINE (Minimax & Randomizer)
+        // 4. AI BOT ENGINE
         // ==========================================
         function startBotMatch(difficulty) {
             isBotMatch = true; botDifficulty = difficulty;
@@ -585,21 +657,18 @@
             let moveIndex = -1;
             const botPlayer = myRole === "X" ? "O" : "X";
             
-            // Randomness factor based on difficulty
             let randomChance = 0;
-            if(botDifficulty === 'beginner') randomChance = 1.0; // 100% random
-            if(botDifficulty === 'intermediate') randomChance = 0.5; // 50% random
-            if(botDifficulty === 'pro') randomChance = 0.2; // 20% random
-            if(botDifficulty === 'legend') randomChance = 0.05; // 5% random
-            if(botDifficulty === 'immortal') randomChance = 0.0; // 0% random (Unbeatable)
+            if(botDifficulty === 'beginner') randomChance = 1.0; 
+            if(botDifficulty === 'intermediate') randomChance = 0.5; 
+            if(botDifficulty === 'pro') randomChance = 0.2; 
+            if(botDifficulty === 'legend') randomChance = 0.05; 
+            if(botDifficulty === 'immortal') randomChance = 0.0; 
 
             if(Math.random() < randomChance) {
-                // Random Move
                 let empty = [];
                 localBoard.forEach((v, i) => { if(v === "") empty.push(i); });
                 moveIndex = empty[Math.floor(Math.random() * empty.length)];
             } else {
-                // Optimal Minimax Move
                 moveIndex = getBestMove(localBoard, botPlayer);
             }
 
@@ -618,7 +687,6 @@
             else showNoti("You Won! 🎉");
         }
 
-        // --- Unbeatable Minimax Algorithm ---
         function getBestMove(board, player) {
             let bestScore = -Infinity; let move = -1;
             for(let i=0; i<9; i++) {
