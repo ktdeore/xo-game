@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>XO Infinite - Professional</title>
     
-    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#09090b">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
@@ -31,6 +30,7 @@
         @keyframes pop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes pulseHint { 0% { box-shadow: inset 0 0 0 0 rgba(34, 197, 94, 0.7); } 50% { box-shadow: inset 0 0 20px 5px rgba(34, 197, 94, 0.9); } 100% { box-shadow: inset 0 0 0 0 rgba(34, 197, 94, 0); } }
 
+        /* Header Navigation */
         .header { height: 70px; width: 100%; padding: 0 30px; background: var(--bg-panel); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); flex-shrink: 0; }
         .logo-area { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .logo-icon { width: 32px; height: 32px; fill: none; stroke: var(--text-main); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
@@ -44,11 +44,14 @@
         .user-nav { display: flex; align-items: center; gap: 15px; display: none; }
         .points-badge { background: rgba(34, 197, 94, 0.15); color: var(--accent); border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 10px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;}
         .nav-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; object-fit: cover; transition: 0.2s;}
+        .nav-avatar:hover { border-color: var(--text-muted); }
 
+        /* Main Area */
         .main-area { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; }
         .screen { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 550px; animation: fadeIn 0.3s ease-out; }
         .active-screen { display: flex; }
 
+        /* UI Cards & Inputs */
         .card { background: var(--bg-panel); padding: 30px; border-radius: 12px; width: 100%; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .input-group { margin-bottom: 15px; width: 100%; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-input); color: #fff; outline: none; transition: 0.2s; font-family: 'Inter', sans-serif;}
@@ -68,6 +71,7 @@
         .list-info { display: flex; align-items: center; gap: 12px; }
         .list-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
         
+        /* Game Screen Layout (PC vs Mobile) */
         .game-layout { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 450px; }
         .board-col { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .chat-col { display: flex; flex-direction: column; width: 100%; height: 280px; }
@@ -80,6 +84,7 @@
             .chat-col { width: 350px; height: 500px; margin-top: 45px;}
         }
 
+        /* Board & Player Bars */
         .board { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; aspect-ratio: 1; background: var(--border); gap: 4px; border: 4px solid var(--border); border-radius: 12px; margin: 15px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
         .cell { background: var(--bg-main); display: flex; justify-content: center; align-items: center; font-size: 5.5rem; font-family: 'Outfit', sans-serif; font-weight: 800; cursor: pointer; user-select: none; transition: 0.1s;}
         .cell:hover { background: var(--bg-input); }
@@ -91,6 +96,7 @@
         .active-turn { border-color: var(--accent); background: rgba(34, 197, 94, 0.05); }
         .player-flag { margin-left: 5px; font-size: 1.1rem; }
 
+        /* Chat System */
         .chat-box { width: 100%; height: 100%; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 15px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; }
         .msg-item { background: var(--bg-input); padding: 8px 12px; border-radius: 8px; width: fit-content; max-width: 85%; word-break: break-word; line-height: 1.4; }
@@ -104,12 +110,11 @@
         .chat-input-area input { flex: 1; background: transparent; border: none; color: #fff; padding: 12px 15px; outline: none; font-size: 0.9rem;}
         .chat-input-area button { background: transparent; color: var(--x-color); border: none; padding: 0 15px; cursor: pointer; font-weight: 600; }
 
+        /* Notification */
         .notification { position: fixed; top: 90px; left: 50%; transform: translateX(-50%); background: var(--text-main); color: var(--bg-main); padding: 12px 25px; border-radius: 8px; font-weight: 700; display: none; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: center; }
         .error-msg { background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 10px; border-radius: 6px; font-size: 0.85rem; text-align: center; margin-bottom: 15px; display: none; border: 1px solid rgba(239, 68, 68, 0.3); }
 
-        .loader { border: 4px solid var(--border); border-top: 4px solid var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
+        /* File Upload */
         .file-upload-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 20px; cursor: pointer; }
         .file-upload-wrapper img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--border); transition: 0.2s; }
         .file-upload-wrapper:hover img { opacity: 0.7; }
@@ -144,14 +149,8 @@
     </div>
 
     <div class="main-area">
-        <!-- 0. LOADING SCREEN -->
-        <div id="screen-loading" class="screen active-screen" style="justify-content: center;">
-            <div class="loader"></div>
-            <h3 style="color: var(--text-muted); font-weight: 500;">Connecting...</h3>
-        </div>
-
-        <!-- 1. AUTH SCREEN -->
-        <div id="screen-auth" class="screen" style="justify-content: center; max-width: 450px;">
+        <!-- 1. AUTH SCREEN (Default Active) -->
+        <div id="screen-auth" class="screen active-screen" style="justify-content: center; max-width: 450px;">
             <div class="card">
                 <h2 id="auth-title" style="text-align: center; margin-bottom: 25px; font-weight: 700;">Log In</h2>
                 <div id="auth-error" class="error-msg"></div>
@@ -180,6 +179,14 @@
 
         <!-- 2. MAIN DASHBOARD -->
         <div id="screen-dashboard" class="screen">
+            <!-- Mobile Tab Menu (Hidden on PC) -->
+            <div class="tab-menu" id="mobile-tabs">
+                <button class="tab-btn active" onclick="switchTab('play')" id="mtab-play">Play</button>
+                <button class="tab-btn" onclick="switchTab('bots')" id="mtab-bots">Bots</button>
+                <button class="tab-btn" onclick="switchTab('friends')" id="mtab-friends">Friends</button>
+                <button class="tab-btn" onclick="switchTab('profile')" id="mtab-profile">Profile</button>
+            </div>
+
             <!-- PLAY TAB -->
             <div id="view-play" class="card tab-view">
                 <h3 style="margin-bottom: 15px;">Global Matchmaking</h3>
@@ -279,6 +286,7 @@
         <!-- 3. GAME SCREEN -->
         <div id="screen-game" class="screen" style="max-width: 1000px; padding-top: 10px;">
             <div class="game-layout">
+                
                 <!-- Left: Board -->
                 <div class="board-col">
                     <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; background: var(--bg-panel); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border);">
@@ -343,6 +351,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -355,14 +364,7 @@
         window.addEventListener('resize', handleResize); handleResize();
 
         // =========================================================================
-        // PWA CACHE / SERVICE WORKER
-        // =========================================================================
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed', err));
-        }
-
-        // =========================================================================
-        // STRICT FIREBASE CONFIGURATION
+        // STRICT FIREBASE CONFIGURATION (Provided)
         // =========================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyARdbrN_3V1Uk6KJ9JbHa6PJmv5Xtfv9Fw",
@@ -390,14 +392,15 @@
         function showNoti(msg) { const noti = document.getElementById('noti'); noti.innerText = msg; noti.style.display = 'block'; setTimeout(() => noti.style.display = 'none', 3000); }
         function switchTab(tabId) {
             document.querySelectorAll('.tab-view').forEach(v => v.style.display = 'none');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav-btn, .tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`view-${tabId}`).style.display = 'block';
             if(document.getElementById(`nav-${tabId}`)) document.getElementById(`nav-${tabId}`).classList.add('active');
+            if(document.getElementById(`mtab-${tabId}`)) document.getElementById(`mtab-${tabId}`).classList.add('active');
             if(tabId === 'friends') loadFriendsData();
         }
 
         // ==========================================
-        // 1. AUTHENTICATION & ANTI-INFINITE LOADING
+        // 1. AUTHENTICATION (LOADING GLITCH FIXED)
         // ==========================================
         let isLoginMode = true;
         function toggleAuthMode() {
@@ -418,7 +421,6 @@
             else { cleanMsg = error.message; }
             errBox.innerText = cleanMsg; errBox.style.display = 'block';
             document.getElementById('btn-action').innerText = isLoginMode ? "Log In" : "Sign Up";
-            showScreen('screen-auth');
         }
 
         function processAuth() {
@@ -435,10 +437,9 @@
                 if(isLoginMode) {
                     return auth.signInWithEmailAndPassword(email, pass);
                 } else {
-                    // STRICT USERNAME FIX (No spaces, dots, special characters)
                     let cleanUser = username.replace(/[^a-z0-9_]/g, '');
                     if(cleanUser !== username || username.length < 3) {
-                        throw new Error("Username must be at least 3 chars long and contain only letters, numbers, or underscores.");
+                        throw new Error("Username must be at least 3 chars long (letters, numbers, underscores only).");
                     }
                     
                     return db.ref('usernames/' + cleanUser).once('value').then(snap => {
@@ -484,60 +485,48 @@
 
         function logout() { auth.signOut(); }
 
-        // FAILSAFE TIMER (Anti-Infinite Loading)
-        let loadingTimeout = setTimeout(() => {
-            if (document.getElementById('screen-loading').classList.contains('active-screen')) {
-                showScreen('screen-auth');
-                const errBox = document.getElementById('auth-error');
-                errBox.innerText = "Network slow or offline. Please check your connection.";
-                errBox.style.display = 'block';
-            }
-        }, 8000); // Wait maximum 8 seconds
-
+        // The Fix: Show dashboard immediately upon auth success to prevent infinite load
         auth.onAuthStateChanged(user => {
-            clearTimeout(loadingTimeout); // Firebase responded, stop failsafe
-
             if(user) {
                 currentUser = user;
                 
-                // Secondary Failsafe if Database read gets stuck
-                let dbTimeout = setTimeout(() => {
-                    if (document.getElementById('screen-loading').classList.contains('active-screen')) {
-                        alert("Database taking too long to respond. Please refresh or check Firebase Rules.");
-                        logout();
-                    }
-                }, 6000);
-
+                // Show dashboard instantly to prevent hanging
+                document.getElementById('user-nav').style.display = 'flex';
+                if(currentRoomId === null && document.getElementById('screen-auth').classList.contains('active-screen')) {
+                    showScreen('screen-dashboard'); 
+                    switchTab('play');
+                }
+                
                 db.ref('users/' + user.uid).on('value', snap => {
-                    clearTimeout(dbTimeout);
-                    userProfile = snap.val(); 
-                    
-                    // Fallback to auto-create profile if missing
-                    if(!userProfile) {
-                        let fallbackUser = "player_" + Math.floor(Math.random() * 99999);
-                        userProfile = { username: fallbackUser, displayName: user.displayName || "Player", photoURL: user.photoURL || "https://ui-avatars.com/api/?name=P", uid: user.uid, points: 0, bio: "", gender: "", flag: "" };
-                        db.ref('users/' + user.uid).set(userProfile);
-                        db.ref('usernames/' + fallbackUser).set(user.uid);
+                    try {
+                        userProfile = snap.val(); 
+                        
+                        // Fallback creation if somehow DB read returned null (e.g., interrupted Google Login)
+                        if(!userProfile) {
+                            let fallbackUser = "player_" + Math.floor(Math.random() * 99999);
+                            userProfile = { username: fallbackUser, displayName: user.displayName || "Player", photoURL: user.photoURL || "https://ui-avatars.com/api/?name=P", uid: user.uid, points: 0, bio: "", gender: "", flag: "" };
+                            db.ref('users/' + user.uid).set(userProfile);
+                            db.ref('usernames/' + fallbackUser).set(user.uid);
+                        }
+                        
+                        document.getElementById('nav-username').innerText = userProfile.displayName || "Player";
+                        document.getElementById('nav-tag').innerText = "@" + (userProfile.username || "guest");
+                        document.getElementById('nav-avatar').src = userProfile.photoURL || "https://ui-avatars.com/api/?name=P";
+                        document.getElementById('nav-points').innerText = userProfile.points || 0;
+                        
+                        document.getElementById('edit-name').value = userProfile.displayName || "";
+                        document.getElementById('edit-username').value = userProfile.username || "";
+                        document.getElementById('edit-avatar-preview').src = userProfile.photoURL || "https://ui-avatars.com/api/?name=P";
+                        document.getElementById('edit-bio').value = userProfile.bio || "";
+                        document.getElementById('edit-gender').value = userProfile.gender || "";
+                        document.getElementById('edit-country').value = userProfile.flag || "";
+                        base64Image = userProfile.photoURL || "";
+                    } catch(err) {
+                        console.error("Profile parsing error: ", err);
                     }
-                    
-                    document.getElementById('nav-username').innerText = userProfile.displayName;
-                    document.getElementById('nav-tag').innerText = "@" + userProfile.username;
-                    document.getElementById('nav-avatar').src = userProfile.photoURL;
-                    document.getElementById('nav-points').innerText = userProfile.points || 0;
-                    
-                    document.getElementById('edit-name').value = userProfile.displayName;
-                    document.getElementById('edit-username').value = userProfile.username;
-                    document.getElementById('edit-avatar-preview').src = userProfile.photoURL;
-                    document.getElementById('edit-bio').value = userProfile.bio || "";
-                    document.getElementById('edit-gender').value = userProfile.gender || "";
-                    document.getElementById('edit-country').value = userProfile.flag || "";
-                    base64Image = userProfile.photoURL;
-                    
-                    document.getElementById('user-nav').style.display = 'flex';
-                    if(currentRoomId === null) { showScreen('screen-dashboard'); switchTab('play'); }
                 }, (error) => {
-                    clearTimeout(dbTimeout);
-                    alert("Database Error: Rules not set properly in Firebase! Make sure .read and .write are true.");
+                    console.error(error);
+                    alert("Database Error: Cannot read data. Please check Firebase Realtime Database Rules.");
                     logout();
                 });
             } else {
@@ -635,8 +624,6 @@
 
         function findRandomMatch() {
             if(!currentUser) return;
-            showScreen('screen-loading'); 
-            
             db.ref('rooms').orderByChild('status').equalTo('waiting').once('value', snap => {
                 let foundRoom = null;
                 if(snap.exists()) {
