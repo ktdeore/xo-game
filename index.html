@@ -364,13 +364,18 @@
 
     </div>
 
-    <div class="footer-version">Version 2.0</div>
+    <div class="footer-version">Version 3.0</div>
 
     <script>
         function handleResize() {
             const isDesktop = window.innerWidth >= 850;
-            document.getElementById('desktop-nav').style.display = isDesktop ? 'flex' : 'none';
-            document.getElementById('mobile-nav').style.display = isDesktop ? 'none' : 'flex';
+            if(currentUser) {
+                document.getElementById('desktop-nav').style.display = isDesktop ? 'flex' : 'none';
+                if(document.getElementById('mobile-nav')) document.getElementById('mobile-nav').style.display = isDesktop ? 'none' : 'flex';
+            } else {
+                document.getElementById('desktop-nav').style.display = 'none';
+                if(document.getElementById('mobile-nav')) document.getElementById('mobile-nav').style.display = 'none';
+            }
         }
         window.addEventListener('resize', handleResize); handleResize();
 
@@ -443,7 +448,6 @@
             document.getElementById('btn-action').innerText = isLoginMode ? "Sign In" : "Register";
         }
 
-        // Removed setPersistence completely. Calling Firebase Auth Directly.
         function processAuth() {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
@@ -484,7 +488,6 @@
             }
         }
 
-        // Direct Popup call (Fixes browser blocking issue)
         function loginWithGoogle() {
             auth.signInWithPopup(googleProvider).then((result) => {
                 const user = result.user;
@@ -515,15 +518,15 @@
         auth.onAuthStateChanged(user => {
             if(user) {
                 currentUser = user;
-                document.getElementById('header-nav').style.display = 'flex';
+                handleResize();
                 document.getElementById('user-nav').style.display = 'flex';
                 
                 db.ref('users/' + user.uid).on('value', snap => {
                     userProfile = snap.val();
                     if(!userProfile) return; // Wait for profile DB creation to finish
                     
-                    document.getElementById('nav-username').innerText = userProfile.displayName || "Player";
-                    document.getElementById('nav-tag').innerText = "@" + (userProfile.username || "guest");
+                    if(document.getElementById('nav-username')) document.getElementById('nav-username').innerText = userProfile.displayName || "Player";
+                    if(document.getElementById('nav-tag')) document.getElementById('nav-tag').innerText = "@" + (userProfile.username || "guest");
                     document.getElementById('nav-avatar').src = userProfile.photoURL;
                     document.getElementById('nav-points').innerText = userProfile.points || 0;
                     
@@ -544,7 +547,7 @@
                 });
             } else {
                 currentUser = null; userProfile = null;
-                document.getElementById('header-nav').style.display = 'none';
+                handleResize();
                 document.getElementById('user-nav').style.display = 'none';
                 document.getElementById('btn-action').innerText = isLoginMode ? "Sign In" : "Register";
                 showScreen('screen-auth');
