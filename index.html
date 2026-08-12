@@ -109,7 +109,7 @@
         .chat-input-area button { background: transparent; color: var(--x-color); border: none; padding: 0 15px; cursor: pointer; font-weight: 600; }
 
         .notification { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--text-main); color: var(--bg-main); padding: 10px 20px; border-radius: 6px; font-weight: 700; display: none; z-index: 1000; text-align: center; font-size: 0.9rem; }
-        .error-msg { background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 10px; border-radius: 6px; font-size: 0.85rem; text-align: center; margin-bottom: 15px; display: none; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .error-msg { background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 10px; border-radius: 6px; font-size: 0.85rem; text-align: left; margin-bottom: 15px; display: none; border: 1px solid rgba(239, 68, 68, 0.3); line-height: 1.4; word-break: break-word; }
 
         .file-upload-wrapper { position: relative; width: 90px; height: 90px; margin: 0 auto 15px; cursor: pointer; }
         .file-upload-wrapper img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
@@ -345,7 +345,7 @@
                         <div style="display: flex; gap: 12px; align-items: center;">
                             <img id="opp-avatar" src="" style="width:38px; height:38px; border-radius:50%; object-fit:cover; border: 1px solid var(--border);">
                             <div>
-                                <div style="font-weight: 600; font-size: 0.95rem;"><span id="opp-name">Waiting...</span> <span id="opp-flag" class="player-flag"></span></div>
+                                <div style="font-weight: 600; font-size: 0.95rem;"><span id="opp-name">Waiting...</span> <span id="opp-flag" style="margin-left:4px;"></span></div>
                                 <div style="font-size: 0.75rem; color: var(--text-muted);">Side: <span id="opp-symbol" style="font-weight:700;">O</span></div>
                             </div>
                         </div>
@@ -357,15 +357,13 @@
                         <div style="display: flex; gap: 12px; align-items: center;">
                             <img id="my-avatar" src="" style="width:38px; height:38px; border-radius:50%; object-fit:cover; border: 1px solid var(--border);">
                             <div>
-                                <div style="font-weight: 600; font-size: 0.95rem;"><span id="my-name-game">Me</span> <span id="my-flag" class="player-flag"></span></div>
+                                <div style="font-weight: 600; font-size: 0.95rem;"><span id="my-name-game">Me</span> <span id="my-flag" style="margin-left:4px;"></span></div>
                                 <div style="font-size: 0.75rem; color: var(--text-muted);">Side: <span id="my-symbol" style="font-weight:700;">X</span></div>
                             </div>
                         </div>
                     </div>
 
                     <div style="width: 100%; margin-top: 12px;">
-                        <button id="hint-btn" class="btn btn-outline" style="border-color: var(--accent); color: var(--accent); display: none; margin-bottom: 10px;" onclick="showHint()">Get Hint</button>
-                        
                         <div id="end-actions" style="display: none; gap: 10px; width: 100%;">
                             <button class="btn" style="background: var(--text-main); color: var(--bg-main);" onclick="requestRematch()">Rematch</button>
                             <button class="btn btn-outline" onclick="leaveMatch()">Exit</button>
@@ -391,7 +389,7 @@
                         </div>
                         
                         <div class="chat-input-area">
-                            <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                            <input type="text" id="chat-input" placeholder="Message..." autocomplete="off" onkeypress="if(event.key === 'Enter') sendChatMessage()">
                             <button onclick="sendChatMessage()">Send</button>
                         </div>
                     </div>
@@ -413,7 +411,8 @@
             measurementId: "G-82TTJV08M8"
         };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); const db = firebase.database();
+        const auth = firebase.auth(); 
+        const db = firebase.database();
         const googleProvider = new firebase.auth.GoogleAuthProvider();
 
         // Application State Engine
@@ -425,7 +424,7 @@
         let base64Image = ""; let pointsAwarded = false;
 
         function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen')); document.getElementById(id).classList.add('active-screen'); }
-        function showNoti(msg) { const noti = document.getElementById('noti'); noti.innerText = msg; noti.style.display = 'block'; setTimeout(() => noti.style.display = 'none', 2500); }
+        function showNoti(msg) { const noti = document.getElementById('noti'); noti.innerText = msg; noti.style.display = 'block'; setTimeout(() => noti.style.display = 'none', 3000); }
         function switchTab(tabId) {
             document.querySelectorAll('.tab-view').forEach(v => v.style.display = 'none');
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -434,7 +433,7 @@
             if(tabId === 'friends') loadFriendsData();
         }
 
-        // Authentication Handlers
+        // Authentication Handlers (Strict Error Filtering)
         let isLoginMode = true;
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
@@ -447,12 +446,32 @@
 
         function handleAuthError(error) {
             const errBox = document.getElementById('auth-error');
-            let cleanMsg = "Authentication failed.";
-            if (error.code && (error.code.includes('invalid-credential') || error.code.includes('wrong-password') || error.code.includes('invalid-login-credentials'))) { cleanMsg = "Incorrect Email or Password."; } 
-            else if (error.code && error.code.includes('user-not-found')) { cleanMsg = "Account not found."; }
-            else if (error.code && error.code.includes('email-already-in-use')) { cleanMsg = "Email already registered."; }
-            else { cleanMsg = error.message; }
-            errBox.innerText = cleanMsg; errBox.style.display = 'block';
+            let cleanMsg = "Authentication failed. Please try again.";
+
+            // Attempt to parse JSON if Firebase returns raw REST errors
+            let rawMsg = error.message || "";
+            try {
+                const parsed = JSON.parse(rawMsg);
+                if (parsed.error && parsed.error.message) {
+                    rawMsg = parsed.error.message;
+                }
+            } catch (e) { /* Ignore parsing errors, it's just a regular string */ }
+
+            const errStr = (error.code + " " + rawMsg).toUpperCase();
+
+            // Strict checking to override raw JSON dumps
+            if (errStr.includes('INVALID_LOGIN_CREDENTIALS') || errStr.includes('INVALID_CREDENTIAL') || errStr.includes('WRONG_PASSWORD') || errStr.includes('USER_NOT_FOUND')) {
+                cleanMsg = "Invalid Login Credentials";
+            } else if (errStr.includes('EMAIL_ALREADY_IN_USE') || errStr.includes('EMAIL-ALREADY-IN-USE')) {
+                cleanMsg = "This email is already registered.";
+            } else if (errStr.includes('TOO_MANY_REQUESTS')) {
+                cleanMsg = "Too many failed attempts. Try again later.";
+            } else if (rawMsg) {
+                cleanMsg = rawMsg.replace(/Firebase:/ig, '').trim(); // Fallback to raw string, removing 'Firebase:' prefix
+            }
+
+            errBox.innerText = cleanMsg;
+            errBox.style.display = 'block';
             document.getElementById('btn-action').innerText = isLoginMode ? "Sign In" : "Register";
         }
 
@@ -725,7 +744,6 @@
             
             document.getElementById('end-actions').style.display = 'none';
             document.getElementById('chat-messages').innerHTML = '<div style="text-align: center; color: var(--border); font-size: 0.75rem;">Match chat initiated.</div>';
-            document.getElementById('hint-btn').style.display = isBotMatch ? 'block' : 'none';
             document.getElementById('chat-col-wrapper').style.display = isBotMatch ? 'none' : 'flex';
             
             showScreen('screen-game');
@@ -863,21 +881,13 @@
             document.getElementById('room-display').innerText = difficulty.toUpperCase();
             document.getElementById('opp-symbol').innerText = "O";
             document.getElementById('opp-name').innerText = difficulty.toUpperCase() + " BOT";
-            document.getElementById('opp-avatar').src = "https://ui-avatars.com/api/?name=B&background=da3633&color=fff";
+            document.getElementById('opp-avatar').src = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Bot" + difficulty;
             document.getElementById('opp-flag').innerText = "";
             
             document.getElementById('end-actions').style.display = 'none';
             document.getElementById('cancel-btn').style.display = 'none';
             document.getElementById('resign-btn').style.display = 'block';
             updateTurnHighlight();
-        }
-
-        function showHint() {
-            if(!isBotMatch || currentTurn !== myRole || !gameActive) return;
-            let move = getBestMove(localBoard, myRole);
-            const cells = document.querySelectorAll('.cell');
-            cells[move].classList.add('hint-anim');
-            setTimeout(() => cells[move].classList.remove('hint-anim'), 1000);
         }
 
         function botMakeMove() {
