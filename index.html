@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XO Infinite - Professional</title>
+    <title>XO Infinite - Professional Esports</title>
     
     <meta name="theme-color" content="#09090b">
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -15,127 +14,120 @@
 
     <style>
         :root {
-            --bg-main: #09090b; --bg-panel: #18181b; --bg-input: #27272a;
-            --text-main: #f4f4f5; --text-muted: #a1a1aa;
-            --accent: #22c55e; --accent-hover: #16a34a;
-            --danger: #ef4444; --danger-hover: #dc2626;
+            --bg-main: #09090b; 
+            --bg-panel: #18181b; 
+            --bg-input: #27272a;
+            --text-main: #f4f4f5; 
+            --text-muted: #a1a1aa;
+            --accent: #22c55e; 
+            --accent-hover: #16a34a;
+            --danger: #ef4444; 
+            --danger-hover: #dc2626;
             --border: #3f3f46;
-            --x-color: #3b82f6; --o-color: #f43f5e;
+            --x-color: #3b82f6; 
+            --o-color: #f43f5e;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes pulseHint { 0% { box-shadow: inset 0 0 0 0 rgba(34, 197, 94, 0.7); } 50% { box-shadow: inset 0 0 20px 5px rgba(34, 197, 94, 0.9); } 100% { box-shadow: inset 0 0 0 0 rgba(34, 197, 94, 0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pop { 0% { transform: scale(0.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         /* Header Navigation */
-        .header { height: 70px; width: 100%; padding: 0 30px; background: var(--bg-panel); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .header { height: 65px; width: 100%; padding: 0 25px; background: var(--bg-panel); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); flex-shrink: 0; }
         .logo-area { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .logo-icon { width: 32px; height: 32px; fill: none; stroke: var(--text-main); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-        .header h1 { font-family: 'Outfit', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: 0.5px; margin-top: 2px;}
+        .logo-icon { width: 28px; height: 28px; fill: none; stroke: var(--text-main); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .header h1 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
         
-        .desktop-nav { display: flex; gap: 20px; flex: 1; justify-content: center; display: none; }
-        .nav-btn { background: transparent; border: none; color: var(--text-muted); font-weight: 600; font-size: 0.95rem; cursor: pointer; padding: 5px 10px; transition: 0.2s; border-bottom: 2px solid transparent; }
-        .nav-btn:hover { color: var(--text-main); }
-        .nav-btn.active { color: #fff; border-bottom-color: var(--accent); }
+        .nav-menu { display: flex; gap: 8px; }
+        .nav-btn { background: transparent; border: none; color: var(--text-muted); font-weight: 600; font-size: 0.9rem; cursor: pointer; padding: 8px 16px; border-radius: 6px; transition: 0.2s; }
+        .nav-btn:hover { color: var(--text-main); background: var(--bg-input); }
+        .nav-btn.active { color: #fff; background: var(--border); }
 
         .user-nav { display: flex; align-items: center; gap: 15px; display: none; }
-        .points-badge { background: rgba(34, 197, 94, 0.15); color: var(--accent); border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 10px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;}
-        .nav-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; object-fit: cover; transition: 0.2s;}
-        .nav-avatar:hover { border-color: var(--text-muted); }
+        .points-badge { background: rgba(34, 197, 94, 0.12); color: var(--accent); border: 1px solid rgba(34, 197, 94, 0.25); padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; }
+        .nav-avatar { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; object-fit: cover; }
 
-        /* Main Area */
-        .main-area { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; }
-        .screen { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 550px; animation: fadeIn 0.3s ease-out; }
+        /* Main Screen Container */
+        .main-area { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 25px 15px; }
+        .screen { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 500px; animation: fadeIn 0.25s ease-out; }
         .active-screen { display: flex; }
 
-        /* UI Cards & Inputs */
-        .card { background: var(--bg-panel); padding: 30px; border-radius: 12px; width: 100%; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .card { background: var(--bg-panel); padding: 25px; border-radius: 12px; width: 100%; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .input-group { margin-bottom: 15px; width: 100%; }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-input); color: #fff; outline: none; transition: 0.2s; font-family: 'Inter', sans-serif;}
+        .input-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px 14px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-input); color: #fff; outline: none; transition: 0.2s; font-size: 0.9rem; }
         .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color: var(--x-color); }
-        .input-group textarea { resize: vertical; min-height: 80px; }
+        .input-group textarea { resize: vertical; min-height: 75px; }
         
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; margin-bottom: 10px; transition: 0.2s; font-size: 0.95rem;}
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; margin-bottom: 10px; transition: 0.2s; font-size: 0.95rem; }
         .btn:hover { background: var(--accent-hover); }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
         .btn-outline:hover { background: var(--bg-input); border-color: var(--text-muted); }
         .btn-danger { background: var(--danger); }
         .btn-danger:hover { background: var(--danger-hover); }
-        .btn-random { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border: none; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
-        .btn-random:hover { background: linear-gradient(135deg, #4f46e5, #9333ea); transform: translateY(-2px); }
+        .btn-google { background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; }
         .list-info { display: flex; align-items: center; gap: 12px; }
-        .list-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .list-info img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
         
-        /* Game Screen Layout (PC vs Mobile) */
+        /* Game Screen Layout */
         .game-layout { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 450px; }
         .board-col { display: flex; flex-direction: column; align-items: center; width: 100%; }
-        .chat-col { display: flex; flex-direction: column; width: 100%; height: 280px; }
+        .chat-col { display: flex; flex-direction: column; width: 100%; height: 260px; }
 
         @media (min-width: 850px) {
-            .desktop-nav { display: flex; }
-            .screen { max-width: 1000px; }
-            .game-layout { flex-direction: row; max-width: 900px; align-items: flex-start; justify-content: center; gap: 40px;}
-            .board-col { width: 400px; }
-            .chat-col { width: 350px; height: 500px; margin-top: 45px;}
+            .screen { max-width: 900px; }
+            .game-layout { flex-direction: row; max-width: 900px; align-items: flex-start; justify-content: center; gap: 35px; }
+            .board-col { width: 380px; }
+            .chat-col { width: 340px; height: 480px; margin-top: 40px; }
         }
 
-        /* Board & Player Bars */
-        .board { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; aspect-ratio: 1; background: var(--border); gap: 4px; border: 4px solid var(--border); border-radius: 12px; margin: 15px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .cell { background: var(--bg-main); display: flex; justify-content: center; align-items: center; font-size: 5.5rem; font-family: 'Outfit', sans-serif; font-weight: 800; cursor: pointer; user-select: none; transition: 0.1s;}
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; aspect-ratio: 1; background: var(--border); gap: 4px; border: 4px solid var(--border); border-radius: 12px; margin: 15px 0; }
+        .cell { background: var(--bg-main); display: flex; justify-content: center; align-items: center; font-size: 5rem; font-family: 'Outfit', sans-serif; font-weight: 800; cursor: pointer; user-select: none; transition: 0.1s; }
         .cell:hover { background: var(--bg-input); }
-        .cell.X { color: var(--x-color); animation: pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); } 
-        .cell.O { color: var(--o-color); animation: pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .hint-anim { animation: pulseHint 1s ease-out; }
+        .cell.X { color: var(--x-color); animation: pop 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275); } 
+        .cell.O { color: var(--o-color); animation: pop 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-        .player-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; background: var(--bg-panel); padding: 12px 20px; border-radius: 10px; border: 2px solid transparent; transition: 0.3s; }
-        .active-turn { border-color: var(--accent); background: rgba(34, 197, 94, 0.05); }
-        .player-flag { margin-left: 5px; font-size: 1.1rem; }
+        .player-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; background: var(--bg-panel); padding: 12px 18px; border-radius: 8px; border: 2px solid transparent; transition: 0.25s; }
+        .active-turn { border-color: var(--accent); background: rgba(34, 197, 94, 0.04); }
 
         /* Chat System */
         .chat-box { width: 100%; height: 100%; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; }
-        .msg-item { background: var(--bg-input); padding: 8px 12px; border-radius: 8px; width: fit-content; max-width: 85%; word-break: break-word; line-height: 1.4; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 12px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; }
+        .msg-item { background: var(--bg-input); padding: 8px 12px; border-radius: 8px; width: fit-content; max-width: 85%; word-break: break-word; }
         .msg-item.self { background: var(--border); align-self: flex-end; }
         
-        .chat-quick-emojis { display: flex; justify-content: space-around; padding: 8px; border-top: 1px solid var(--border); background: var(--bg-input); }
-        .emoji-btn { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; transition: 0.2s; }
+        .chat-quick-emojis { display: flex; justify-content: space-around; padding: 6px; border-top: 1px solid var(--border); background: var(--bg-input); }
+        .emoji-btn { background: transparent; border: none; font-size: 1.1rem; cursor: pointer; transition: 0.15s; }
         .emoji-btn:hover { transform: scale(1.2); }
         
         .chat-input-area { display: flex; border-top: 1px solid var(--border); background: var(--bg-main); }
-        .chat-input-area input { flex: 1; background: transparent; border: none; color: #fff; padding: 12px 15px; outline: none; font-size: 0.9rem;}
+        .chat-input-area input { flex: 1; background: transparent; border: none; color: #fff; padding: 10px 14px; outline: none; font-size: 0.85rem; }
         .chat-input-area button { background: transparent; color: var(--x-color); border: none; padding: 0 15px; cursor: pointer; font-weight: 600; }
 
-        /* Notification */
-        .notification { position: fixed; top: 90px; left: 50%; transform: translateX(-50%); background: var(--text-main); color: var(--bg-main); padding: 12px 25px; border-radius: 8px; font-weight: 700; display: none; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: center; }
+        .notification { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--text-main); color: var(--bg-main); padding: 10px 20px; border-radius: 6px; font-weight: 700; display: none; z-index: 1000; text-align: center; font-size: 0.9rem; }
         .error-msg { background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 10px; border-radius: 6px; font-size: 0.85rem; text-align: center; margin-bottom: 15px; display: none; border: 1px solid rgba(239, 68, 68, 0.3); }
 
-        /* File Upload */
-        .file-upload-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 20px; cursor: pointer; }
-        .file-upload-wrapper img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--border); transition: 0.2s; }
-        .file-upload-wrapper:hover img { opacity: 0.7; }
+        .file-upload-wrapper { position: relative; width: 90px; height: 90px; margin: 0 auto 15px; cursor: pointer; }
+        .file-upload-wrapper img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
         .file-upload-wrapper input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        .file-upload-badge { position: absolute; bottom: 0; right: 0; background: var(--border); padding: 5px; border-radius: 50%; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 
     <div id="noti" class="notification">Message</div>
 
-    <!-- TOP HEADER -->
+    <!-- Header Navigation Bar -->
     <div class="header">
         <div class="logo-area" onclick="if(currentUser) switchTab('play')">
-            <svg class="logo-icon" viewBox="0 0 24 24">
-                <path d="M4 4l16 16M4 20L20 4"></path>
-            </svg>
+            <svg class="logo-icon" viewBox="0 0 24 24"><path d="M4 4l16 16M4 20L20 4"></path></svg>
             <h1>XO INFINITE</h1>
         </div>
         
-        <div class="desktop-nav" id="desktop-nav">
+        <div class="nav-menu" id="header-nav" style="display:none;">
             <button class="nav-btn active" onclick="switchTab('play')" id="nav-play">Play</button>
             <button class="nav-btn" onclick="switchTab('bots')" id="nav-bots">Practice</button>
             <button class="nav-btn" onclick="switchTab('friends')" id="nav-friends">Friends</button>
@@ -143,67 +135,61 @@
         </div>
 
         <div class="user-nav" id="user-nav">
-            <div class="points-badge" title="Total Points">🏆 <span id="nav-points">0</span></div>
+            <div class="points-badge">PTS: <span id="nav-points">0</span></div>
             <img id="nav-avatar" class="nav-avatar" src="" onclick="switchTab('profile')">
         </div>
     </div>
 
     <div class="main-area">
-        <!-- 1. AUTH SCREEN (Default Active) -->
-        <div id="screen-auth" class="screen active-screen" style="justify-content: center; max-width: 450px;">
+        <!-- Auth Screen -->
+        <div id="screen-auth" class="screen active-screen" style="justify-content: center; max-width: 420px;">
             <div class="card">
-                <h2 id="auth-title" style="text-align: center; margin-bottom: 25px; font-weight: 700;">Log In</h2>
+                <h2 id="auth-title" style="text-align: center; margin-bottom: 20px; font-weight: 700;">Sign In</h2>
                 <div id="auth-error" class="error-msg"></div>
                 
                 <div id="signup-fields" style="display: none;">
-                    <div class="input-group"><input type="text" id="reg-username" placeholder="Username (Min 3 letters/numbers)"></div>
+                    <div class="input-group">
+                        <input type="text" id="reg-username" placeholder="Username (Min 3 characters, alphanumeric)">
+                    </div>
                 </div>
                 
                 <div class="input-group"><input type="email" id="email" placeholder="Email Address"></div>
                 <div class="input-group"><input type="password" id="password" placeholder="Password"></div>
                 
-                <div style="text-align: right; margin-top: -10px; margin-bottom: 15px;">
-                    <span style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer; transition: 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-muted)'" onclick="handleForgotPassword()">Forgot Password?</span>
+                <div style="text-align: right; margin-top: -8px; margin-bottom: 15px;">
+                    <span style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer;" onclick="handleForgotPassword()">Forgot Password?</span>
                 </div>
                 
-                <button class="btn" id="btn-action" onclick="processAuth()">Log In</button>
-                <div style="text-align: center; margin: 15px 0; font-size: 0.9rem; cursor: pointer; color: var(--text-muted);" onclick="toggleAuthMode()" id="toggle-auth-text">Don't have an account? <span style="color:var(--x-color); font-weight: 600;">Sign Up</span></div>
+                <button class="btn" id="btn-action" onclick="processAuth()">Sign In</button>
+                <div style="text-align: center; margin: 12px 0; font-size: 0.85rem; cursor: pointer; color: var(--text-muted);" onclick="toggleAuthMode()" id="toggle-auth-text">Don't have an account? <span style="color:var(--x-color); font-weight: 600;">Register</span></div>
                 
-                <div style="text-align: center; margin: 15px 0; color: var(--border); font-size: 0.85rem;">OR</div>
+                <div style="text-align: center; margin: 12px 0; color: var(--border); font-size: 0.8rem;">OR</div>
                 
-                <button class="btn" style="background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="loginWithGoogle()">
-                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google"> Continue with Google
+                <button class="btn btn-google" onclick="loginWithGoogle()">
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="18" alt="Google"> Continue with Google
                 </button>
             </div>
         </div>
 
-        <!-- 2. MAIN DASHBOARD -->
+        <!-- Dashboard Screen -->
         <div id="screen-dashboard" class="screen">
-            <!-- Mobile Tab Menu (Hidden on PC) -->
-            <div class="tab-menu" id="mobile-tabs">
-                <button class="tab-btn active" onclick="switchTab('play')" id="mtab-play">Play</button>
-                <button class="tab-btn" onclick="switchTab('bots')" id="mtab-bots">Bots</button>
-                <button class="tab-btn" onclick="switchTab('friends')" id="mtab-friends">Friends</button>
-                <button class="tab-btn" onclick="switchTab('profile')" id="mtab-profile">Profile</button>
-            </div>
-
-            <!-- PLAY TAB -->
+            <!-- Play View -->
             <div id="view-play" class="card tab-view">
                 <h3 style="margin-bottom: 15px;">Global Matchmaking</h3>
-                <button class="btn btn-random" onclick="findRandomMatch()">🌍 Play Random Player</button>
+                <button class="btn" style="background: linear-gradient(135deg, #6366f1, #a855f7);" onclick="findRandomMatch()">Play Random Match</button>
                 
-                <h3 style="margin: 25px 0 15px; border-top: 1px solid var(--border); padding-top: 25px;">Play with Friends</h3>
-                <button class="btn btn-outline" onclick="createRoom()">Host Private Room</button>
+                <h3 style="margin: 25px 0 15px; border-top: 1px solid var(--border); padding-top: 20px;">Custom Room</h3>
+                <button class="btn btn-outline" onclick="createRoom()">Create Room</button>
                 
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <input type="text" id="join-code" placeholder="Enter Room Code" style="flex: 1; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 8px; outline: none; text-transform: uppercase;">
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <input type="text" id="join-code" placeholder="Enter Room Code" style="flex: 1; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 6px; outline: none; text-transform: uppercase;">
                     <button class="btn btn-outline" style="width: auto; margin: 0; padding: 0 20px;" onclick="joinRoomFromInput()">Join</button>
                 </div>
             </div>
 
-            <!-- BOTS TAB -->
+            <!-- Practice Bots View -->
             <div id="view-bots" class="card tab-view" style="display: none;">
-                <h3 style="margin-bottom: 20px;">Practice vs AI</h3>
+                <h3 style="margin-bottom: 20px;">AI Difficulty</h3>
                 <button class="btn btn-outline" onclick="startBotMatch('beginner')">Beginner Bot</button>
                 <button class="btn btn-outline" onclick="startBotMatch('intermediate')">Intermediate Bot</button>
                 <button class="btn btn-outline" onclick="startBotMatch('pro')">Pro Bot</button>
@@ -211,41 +197,44 @@
                 <button class="btn" style="background: var(--text-main); color: var(--bg-main);" onclick="startBotMatch('immortal')">Immortal Bot (Unbeatable)</button>
             </div>
 
-            <!-- FRIENDS TAB -->
+            <!-- Friends View -->
             <div id="view-friends" class="card tab-view" style="display: none;">
-                <h3 style="margin-bottom: 15px;">Add Friends</h3>
-                <div style="display: flex; gap: 10px; margin-bottom: 25px;">
-                    <input type="text" id="friend-search" placeholder="Enter Username..." style="flex: 1; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 8px; outline: none;">
+                <h3 style="margin-bottom: 15px;">Search Player</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="friend-search" placeholder="Enter Username..." style="flex: 1; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 6px; outline: none;">
                     <button class="btn btn-outline" style="width: auto; margin: 0; padding: 0 20px;" onclick="sendFriendRequest()">Send</button>
                 </div>
 
-                <h4 style="margin: 15px 0 10px; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Pending</h4>
+                <h4 style="margin: 15px 0 10px; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Requests</h4>
                 <div id="requests-list"><p style="font-size: 0.85rem; color: var(--border);">No pending requests.</p></div>
 
-                <h4 style="margin: 25px 0 10px; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">My Friends</h4>
+                <h4 style="margin: 20px 0 10px; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Friends List</h4>
                 <div id="friends-list"></div>
             </div>
 
-            <!-- PROFILE TAB -->
+            <!-- Profile View -->
             <div id="view-profile" class="card tab-view" style="display: none;">
-                <h3 style="margin-bottom: 20px; text-align: center;">Edit Profile</h3>
+                <h3 style="margin-bottom: 20px; text-align: center;">Account Details</h3>
                 
                 <div class="file-upload-wrapper">
                     <img id="edit-avatar-preview" src="">
                     <input type="file" id="avatar-file" accept="image/*" onchange="handleImageUpload(event)">
-                    <div class="file-upload-badge">✏️</div>
                 </div>
 
-                <label style="font-size: 0.8rem; color: var(--text-muted);">Display Name</label>
-                <div class="input-group"><input type="text" id="edit-name" placeholder="Display Name"></div>
+                <div class="input-group">
+                    <label>Display Name</label>
+                    <input type="text" id="edit-name">
+                </div>
                 
-                <label style="font-size: 0.8rem; color: var(--text-muted);">Bio</label>
-                <div class="input-group"><textarea id="edit-bio" placeholder="Write something about yourself..."></textarea></div>
+                <div class="input-group">
+                    <label>Bio</label>
+                    <textarea id="edit-bio" placeholder="Add account bio..."></textarea>
+                </div>
 
-                <div style="display: flex; gap: 15px;">
+                <div style="display: flex; gap: 12px;">
                     <div style="flex: 1;">
-                        <label style="font-size: 0.8rem; color: var(--text-muted);">Gender</label>
                         <div class="input-group">
+                            <label>Gender</label>
                             <select id="edit-gender">
                                 <option value="">Select...</option>
                                 <option value="Male">Male</option>
@@ -255,51 +244,109 @@
                         </div>
                     </div>
                     <div style="flex: 1;">
-                        <label style="font-size: 0.8rem; color: var(--text-muted);">Country</label>
                         <div class="input-group">
-                            <select id="edit-country">
-                                <option value="">Select...</option>
-                                <option value="🇮🇳">🇮🇳 India</option>
-                                <option value="🇺🇸">🇺🇸 USA</option>
-                                <option value="🇬🇧">🇬🇧 UK</option>
-                                <option value="🇨🇦">🇨🇦 Canada</option>
-                                <option value="🇦🇺">🇦🇺 Australia</option>
-                                <option value="🇵🇰">🇵🇰 Pakistan</option>
-                                <option value="🇧🇩">🇧🇩 Bangladesh</option>
-                                <option value="🇳🇵">🇳🇵 Nepal</option>
-                                <option value="🇸🇬">🇸🇬 Singapore</option>
-                                <option value="🇦🇪">🇦🇪 UAE</option>
-                                <option value="🌍">🌍 Other</option>
-                            </select>
+                            <label>Date of Birth</label>
+                            <input type="date" id="edit-dob" onchange="calculateAge()">
                         </div>
                     </div>
                 </div>
 
-                <label style="font-size: 0.8rem; color: var(--text-muted);">Username (Unique ID)</label>
-                <div class="input-group"><input type="text" id="edit-username" placeholder="username" disabled style="opacity: 0.5; cursor: not-allowed;"></div>
+                <div class="input-group">
+                    <label>Calculated Age</label>
+                    <input type="text" id="edit-age" placeholder="Age" disabled style="opacity: 0.6;">
+                </div>
+
+                <div class="input-group">
+                    <label>Country / Flag</label>
+                    <select id="edit-country">
+                        <option value="">Select Country...</option>
+                        <option value="🇦🇫 Afghanistan">🇦🇫 Afghanistan</option>
+                        <option value="🇦🇱 Albania">🇦🇱 Albania</option>
+                        <option value="🇩🇿 Algeria">🇩🇿 Algeria</option>
+                        <option value="🇦🇷 Argentina">🇦🇷 Argentina</option>
+                        <option value="🇦🇺 Australia">🇦🇺 Australia</option>
+                        <option value="🇦🇹 Austria">🇦🇹 Austria</option>
+                        <option value="🇧🇩 Bangladesh">🇧🇩 Bangladesh</option>
+                        <option value="🇧🇪 Belgium">🇧🇪 Belgium</option>
+                        <option value="🇧🇷 Brazil">🇧🇷 Brazil</option>
+                        <option value="🇨🇦 Canada">🇨🇦 Canada</option>
+                        <option value="🇨🇱 Chile">🇨🇱 Chile</option>
+                        <option value="🇨🇳 China">🇨🇳 China</option>
+                        <option value="🇨🇴 Colombia">🇨🇴 Colombia</option>
+                        <option value="🇩🇰 Denmark">🇩🇰 Denmark</option>
+                        <option value="🇪🇬 Egypt">🇪🇬 Egypt</option>
+                        <option value="🇫🇮 Finland">🇫🇮 Finland</option>
+                        <option value="🇫🇷 France">🇫🇷 France</option>
+                        <option value="🇩🇪 Germany">🇩🇪 Germany</option>
+                        <option value="🇬🇷 Greece">🇬🇷 Greece</option>
+                        <option value="🇭🇰 Hong Kong">🇭🇰 Hong Kong</option>
+                        <option value="🇭🇺 Hungary">🇭🇺 Hungary</option>
+                        <option value="🇮🇸 Iceland">🇮🇸 Iceland</option>
+                        <option value="🇮🇳 India">🇮🇳 India</option>
+                        <option value="🇮🇩 Indonesia">🇮🇩 Indonesia</option>
+                        <option value="🇮🇷 Iran">🇮🇷 Iran</option>
+                        <option value="🇮🇶 Iraq">🇮🇶 Iraq</option>
+                        <option value="🇮🇪 Ireland">🇮🇪 Ireland</option>
+                        <option value="🇮🇱 Israel">🇮🇱 Israel</option>
+                        <option value="🇮🇹 Italy">🇮🇹 Italy</option>
+                        <option value="🇯🇵 Japan">🇯🇵 Japan</option>
+                        <option value="🇰🇪 Kenya">🇰🇪 Kenya</option>
+                        <option value="🇰🇷 Korea, South">🇰🇷 Korea, South</option>
+                        <option value="🇲🇾 Malaysia">🇲🇾 Malaysia</option>
+                        <option value="🇲🇽 Mexico">🇲🇽 Mexico</option>
+                        <option value="🇳🇵 Nepal">🇳🇵 Nepal</option>
+                        <option value="🇳🇱 Netherlands">🇳🇱 Netherlands</option>
+                        <option value="🇳🇿 New Zealand">🇳🇿 New Zealand</option>
+                        <option value="🇳🇬 Nigeria">🇳🇬 Nigeria</option>
+                        <option value="🇳🇴 Norway">🇳🇴 Norway</option>
+                        <option value="🇵🇰 Pakistan">🇵🇰 Pakistan</option>
+                        <option value="🇵🇭 Philippines">🇵🇭 Philippines</option>
+                        <option value="🇵🇱 Poland">🇵🇱 Poland</option>
+                        <option value="🇵🇹 Portugal">🇵🇹 Portugal</option>
+                        <option value="🇶🇦 Qatar">🇶🇦 Qatar</option>
+                        <option value="🇷🇴 Romania">🇷🇴 Romania</option>
+                        <option value="🇷🇺 Russia">🇷🇺 Russia</option>
+                        <option value="🇸🇦 Saudi Arabia">🇸🇦 Saudi Arabia</option>
+                        <option value="🇸🇬 Singapore">🇸🇬 Singapore</option>
+                        <option value="🇿🇦 South Africa">🇿🇦 South Africa</option>
+                        <option value="🇪🇸 Spain">🇪🇸 Spain</option>
+                        <option value="🇱🇰 Sri Lanka">🇱🇰 Sri Lanka</option>
+                        <option value="🇸🇪 Sweden">🇸🇪 Sweden</option>
+                        <option value="🇨🇭 Switzerland">🇨🇭 Switzerland</option>
+                        <option value="🇹🇭 Thailand">🇹🇭 Thailand</option>
+                        <option value="🇹🇷 Turkey">🇹🇷 Turkey</option>
+                        <option value="🇦🇪 UAE">🇦🇪 UAE</option>
+                        <option value="🇬🇧 UK">🇬🇧 UK</option>
+                        <option value="🇺🇸 USA">🇺🇸 USA</option>
+                        <option value="🇻🇳 Vietnam">🇻🇳 Vietnam</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Username (System Identifier)</label>
+                    <input type="text" id="edit-username" placeholder="username" disabled style="opacity: 0.5;">
+                </div>
                 
                 <button class="btn" onclick="saveProfile()">Save Changes</button>
-                <button class="btn btn-outline btn-danger" style="margin-top: 15px; border-color: var(--danger); color: var(--danger);" onclick="logout()">Log Out</button>
+                <button class="btn btn-outline btn-danger" style="margin-top: 10px; border-color: var(--danger); color: var(--danger);" onclick="logout()">Log Out</button>
             </div>
         </div>
 
-        <!-- 3. GAME SCREEN -->
-        <div id="screen-game" class="screen" style="max-width: 1000px; padding-top: 10px;">
+        <!-- Game Screen -->
+        <div id="screen-game" class="screen" style="max-width: 900px;">
             <div class="game-layout">
-                
-                <!-- Left: Board -->
                 <div class="board-col">
-                    <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; background: var(--bg-panel); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border);">
-                        <span id="room-code-display" style="color: var(--text-muted); font-size: 0.9rem;">Code: <strong id="room-display" style="color: #fff; letter-spacing: 1px;">---</strong></span>
+                    <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center; background: var(--bg-panel); padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border);">
+                        <span id="room-code-display" style="color: var(--text-muted); font-size: 0.85rem;">Code: <strong id="room-display" style="color: #fff;">---</strong></span>
                         <span id="copy-code-btn" onclick="copyInviteLink()" style="color: var(--x-color); cursor: pointer; font-size: 0.85rem; font-weight: 600;">Copy</span>
                     </div>
 
                     <div class="player-bar" id="opp-bar">
                         <div style="display: flex; gap: 12px; align-items: center;">
-                            <img id="opp-avatar" src="" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border: 1px solid var(--border);">
+                            <img id="opp-avatar" src="" style="width:38px; height:38px; border-radius:50%; object-fit:cover; border: 1px solid var(--border);">
                             <div>
-                                <div style="font-weight: 600; font-size: 1.05rem;"><span id="opp-name">Waiting...</span> <span id="opp-flag" class="player-flag"></span></div>
-                                <div style="font-size: 0.75rem; color: var(--text-muted);">Playing as <span id="opp-symbol" style="font-weight:700;">O</span></div>
+                                <div style="font-weight: 600; font-size: 0.95rem;"><span id="opp-name">Waiting...</span> <span id="opp-flag" class="player-flag"></span></div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Side: <span id="opp-symbol" style="font-weight:700;">O</span></div>
                             </div>
                         </div>
                     </div>
@@ -308,17 +355,16 @@
 
                     <div class="player-bar" id="my-bar">
                         <div style="display: flex; gap: 12px; align-items: center;">
-                            <img id="my-avatar" src="" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border: 1px solid var(--border);">
+                            <img id="my-avatar" src="" style="width:38px; height:38px; border-radius:50%; object-fit:cover; border: 1px solid var(--border);">
                             <div>
-                                <div style="font-weight: 600; font-size: 1.05rem;"><span id="my-name-game">Me</span> <span id="my-flag" class="player-flag"></span></div>
-                                <div style="font-size: 0.75rem; color: var(--text-muted);">Playing as <span id="my-symbol" style="font-weight:700;">X</span></div>
+                                <div style="font-weight: 600; font-size: 0.95rem;"><span id="my-name-game">Me</span> <span id="my-flag" class="player-flag"></span></div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Side: <span id="my-symbol" style="font-weight:700;">X</span></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Actions Panel -->
-                    <div style="width: 100%; margin-top: 15px;">
-                        <button id="hint-btn" class="btn btn-outline" style="border-color: var(--accent); color: var(--accent); display: none; margin-bottom: 10px;" onclick="showHint()">💡 Get Hint</button>
+                    <div style="width: 100%; margin-top: 12px;">
+                        <button id="hint-btn" class="btn btn-outline" style="border-color: var(--accent); color: var(--accent); display: none; margin-bottom: 10px;" onclick="showHint()">Get Hint</button>
                         
                         <div id="end-actions" style="display: none; gap: 10px; width: 100%;">
                             <button class="btn" style="background: var(--text-main); color: var(--bg-main);" onclick="requestRematch()">Rematch</button>
@@ -326,15 +372,14 @@
                         </div>
                         
                         <button id="cancel-btn" class="btn btn-outline btn-danger" style="display: none;" onclick="leaveMatch()">Cancel Match</button>
-                        <button id="resign-btn" class="btn btn-outline" style="display: none;" onclick="resignMatch()">Resign</button>
+                        <button id="resign-btn" class="btn btn-outline" style="display: none;" onclick="resignMatch()">Resign Match</button>
                     </div>
                 </div>
 
-                <!-- Right: Chat -->
                 <div class="chat-col" id="chat-col-wrapper">
                     <div class="chat-box" id="chat-container">
                         <div class="chat-messages" id="chat-messages">
-                            <div style="text-align: center; color: var(--border); font-size: 0.75rem; margin-top: 10px;">Chat secured.</div>
+                            <div style="text-align: center; color: var(--border); font-size: 0.75rem;">Match chat initiated.</div>
                         </div>
                         
                         <div class="chat-quick-emojis">
@@ -346,26 +391,17 @@
                         </div>
                         
                         <div class="chat-input-area">
-                            <input type="text" id="chat-input" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                            <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
                             <button onclick="sendChatMessage()">Send</button>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
     <script>
-        function handleResize() {
-            const isDesktop = window.innerWidth >= 850;
-            document.getElementById('desktop-nav').style.display = isDesktop ? 'flex' : 'none';
-        }
-        window.addEventListener('resize', handleResize); handleResize();
-
-        // =========================================================================
-        // STRICT FIREBASE CONFIGURATION (Provided)
-        // =========================================================================
+        // Firebase Setup Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyARdbrN_3V1Uk6KJ9JbHa6PJmv5Xtfv9Fw",
             authDomain: "xo-play-e654f.firebaseapp.com",
@@ -380,7 +416,7 @@
         const auth = firebase.auth(); const db = firebase.database();
         const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-        // System State
+        // Application State Engine
         let currentUser = null; let userProfile = null;
         let currentRoomId = null; let myRole = null; let matchType = "private";
         let gameActive = false; let currentTurn = 'X'; 
@@ -389,25 +425,22 @@
         let base64Image = ""; let pointsAwarded = false;
 
         function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen')); document.getElementById(id).classList.add('active-screen'); }
-        function showNoti(msg) { const noti = document.getElementById('noti'); noti.innerText = msg; noti.style.display = 'block'; setTimeout(() => noti.style.display = 'none', 3000); }
+        function showNoti(msg) { const noti = document.getElementById('noti'); noti.innerText = msg; noti.style.display = 'block'; setTimeout(() => noti.style.display = 'none', 2500); }
         function switchTab(tabId) {
             document.querySelectorAll('.tab-view').forEach(v => v.style.display = 'none');
-            document.querySelectorAll('.nav-btn, .tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`view-${tabId}`).style.display = 'block';
             if(document.getElementById(`nav-${tabId}`)) document.getElementById(`nav-${tabId}`).classList.add('active');
-            if(document.getElementById(`mtab-${tabId}`)) document.getElementById(`mtab-${tabId}`).classList.add('active');
             if(tabId === 'friends') loadFriendsData();
         }
 
-        // ==========================================
-        // 1. AUTHENTICATION (LOADING GLITCH FIXED)
-        // ==========================================
+        // Authentication Handlers
         let isLoginMode = true;
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').innerText = isLoginMode ? "Log In" : "Create Account";
-            document.getElementById('btn-action').innerText = isLoginMode ? "Log In" : "Sign Up";
-            document.getElementById('toggle-auth-text').innerHTML = isLoginMode ? "Don't have an account? <span style='color:var(--x-color); font-weight:600;'>Sign Up</span>" : "Already have an account? <span style='color:var(--x-color); font-weight:600;'>Log In</span>";
+            document.getElementById('auth-title').innerText = isLoginMode ? "Sign In" : "Create Account";
+            document.getElementById('btn-action').innerText = isLoginMode ? "Sign In" : "Register";
+            document.getElementById('toggle-auth-text').innerHTML = isLoginMode ? "Don't have an account? <span style='color:var(--x-color); font-weight:600;'>Register</span>" : "Already have an account? <span style='color:var(--x-color); font-weight:600;'>Sign In</span>";
             document.getElementById('signup-fields').style.display = isLoginMode ? 'none' : 'block';
             document.getElementById('auth-error').style.display = 'none';
         }
@@ -420,7 +453,7 @@
             else if (error.code && error.code.includes('email-already-in-use')) { cleanMsg = "Email already registered."; }
             else { cleanMsg = error.message; }
             errBox.innerText = cleanMsg; errBox.style.display = 'block';
-            document.getElementById('btn-action').innerText = isLoginMode ? "Log In" : "Sign Up";
+            document.getElementById('btn-action').innerText = isLoginMode ? "Sign In" : "Register";
         }
 
         function processAuth() {
@@ -429,7 +462,7 @@
             const username = document.getElementById('reg-username').value.trim().toLowerCase();
             const errBox = document.getElementById('auth-error');
             
-            if(!email || !pass) { errBox.innerText = "Please fill all fields."; errBox.style.display = 'block'; return; }
+            if(!email || !pass) { errBox.innerText = "Please fill in all fields."; errBox.style.display = 'block'; return; }
             document.getElementById('btn-action').innerText = "Processing...";
 
             auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
@@ -439,15 +472,15 @@
                 } else {
                     let cleanUser = username.replace(/[^a-z0-9_]/g, '');
                     if(cleanUser !== username || username.length < 3) {
-                        throw new Error("Username must be at least 3 chars long (letters, numbers, underscores only).");
+                        throw new Error("Username must be at least 3 alphanumeric characters.");
                     }
                     
                     return db.ref('usernames/' + cleanUser).once('value').then(snap => {
-                        if(snap.exists()) { throw new Error("Username already taken! Please choose another."); }
+                        if(snap.exists()) { throw new Error("Username is taken."); }
                         return auth.createUserWithEmailAndPassword(email, pass).then(cred => {
                             const defaultAvatar = `https://ui-avatars.com/api/?name=${cleanUser}&background=random`;
                             db.ref('users/' + cred.user.uid).set({
-                                username: cleanUser, displayName: cleanUser, photoURL: defaultAvatar, uid: cred.user.uid, points: 0, bio: "", gender: "", flag: ""
+                                username: cleanUser, displayName: cleanUser, photoURL: defaultAvatar, uid: cred.user.uid, points: 0, bio: "", gender: "", country: "", dob: "", age: ""
                             });
                             db.ref('usernames/' + cleanUser).set(cred.user.uid);
                         });
@@ -466,7 +499,7 @@
                 db.ref('users/' + user.uid).once('value').then(snap => {
                     if(!snap.exists()) {
                         db.ref('users/' + user.uid).set({
-                            username: emailPrefix, displayName: user.displayName || "Player", photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${emailPrefix}`, uid: user.uid, points: 0, bio: "", gender: "", flag: ""
+                            username: emailPrefix, displayName: user.displayName || "Player", photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${emailPrefix}`, uid: user.uid, points: 0, bio: "", gender: "", country: "", dob: "", age: ""
                         });
                         db.ref('usernames/' + emailPrefix).set(user.uid);
                     }
@@ -477,72 +510,70 @@
         function handleForgotPassword() {
             const email = document.getElementById('email').value.trim();
             const errBox = document.getElementById('auth-error');
-            if(!email) { errBox.innerText = "Enter your email in the box first to reset password."; errBox.style.display = 'block'; return; }
+            if(!email) { errBox.innerText = "Enter your email address first."; errBox.style.display = 'block'; return; }
             auth.sendPasswordResetEmail(email)
-            .then(() => { errBox.innerText = "Password reset link sent to your email!"; errBox.style.color = "var(--accent)"; errBox.style.display = 'block'; })
+            .then(() => { errBox.innerText = "Reset email sent."; errBox.style.color = "var(--accent)"; errBox.style.display = 'block'; })
             .catch(handleAuthError);
         }
 
         function logout() { auth.signOut(); }
 
-        // The Fix: Show dashboard immediately upon auth success to prevent infinite load
         auth.onAuthStateChanged(user => {
             if(user) {
                 currentUser = user;
-                
-                // Show dashboard instantly to prevent hanging
+                document.getElementById('header-nav').style.display = 'flex';
                 document.getElementById('user-nav').style.display = 'flex';
-                if(currentRoomId === null && document.getElementById('screen-auth').classList.contains('active-screen')) {
-                    showScreen('screen-dashboard'); 
-                    switchTab('play');
-                }
                 
                 db.ref('users/' + user.uid).on('value', snap => {
-                    try {
-                        userProfile = snap.val(); 
-                        
-                        // Fallback creation if somehow DB read returned null (e.g., interrupted Google Login)
-                        if(!userProfile) {
-                            let fallbackUser = "player_" + Math.floor(Math.random() * 99999);
-                            userProfile = { username: fallbackUser, displayName: user.displayName || "Player", photoURL: user.photoURL || "https://ui-avatars.com/api/?name=P", uid: user.uid, points: 0, bio: "", gender: "", flag: "" };
-                            db.ref('users/' + user.uid).set(userProfile);
-                            db.ref('usernames/' + fallbackUser).set(user.uid);
-                        }
-                        
-                        document.getElementById('nav-username').innerText = userProfile.displayName || "Player";
-                        document.getElementById('nav-tag').innerText = "@" + (userProfile.username || "guest");
-                        document.getElementById('nav-avatar').src = userProfile.photoURL || "https://ui-avatars.com/api/?name=P";
-                        document.getElementById('nav-points').innerText = userProfile.points || 0;
-                        
-                        document.getElementById('edit-name').value = userProfile.displayName || "";
-                        document.getElementById('edit-username').value = userProfile.username || "";
-                        document.getElementById('edit-avatar-preview').src = userProfile.photoURL || "https://ui-avatars.com/api/?name=P";
-                        document.getElementById('edit-bio').value = userProfile.bio || "";
-                        document.getElementById('edit-gender').value = userProfile.gender || "";
-                        document.getElementById('edit-country').value = userProfile.flag || "";
-                        base64Image = userProfile.photoURL || "";
-                    } catch(err) {
-                        console.error("Profile parsing error: ", err);
+                    userProfile = snap.val();
+                    if(!userProfile) {
+                        let fallbackUser = "user_" + Math.floor(Math.random() * 90000 + 10000);
+                        userProfile = { username: fallbackUser, displayName: user.displayName || "Player", photoURL: user.photoURL || "https://ui-avatars.com/api/?name=P", uid: user.uid, points: 0, bio: "", gender: "", country: "", dob: "", age: "" };
+                        db.ref('users/' + user.uid).set(userProfile);
+                        db.ref('usernames/' + fallbackUser).set(user.uid);
                     }
-                }, (error) => {
-                    console.error(error);
-                    alert("Database Error: Cannot read data. Please check Firebase Realtime Database Rules.");
-                    logout();
+                    
+                    document.getElementById('nav-username').innerText = userProfile.displayName || "Player";
+                    document.getElementById('nav-avatar').src = userProfile.photoURL || "https://ui-avatars.com/api/?name=P";
+                    document.getElementById('nav-points').innerText = userProfile.points || 0;
+                    
+                    document.getElementById('edit-name').value = userProfile.displayName || "";
+                    document.getElementById('edit-username').value = userProfile.username || "";
+                    document.getElementById('edit-avatar-preview').src = userProfile.photoURL || "https://ui-avatars.com/api/?name=P";
+                    document.getElementById('edit-bio').value = userProfile.bio || "";
+                    document.getElementById('edit-gender').value = userProfile.gender || "";
+                    document.getElementById('edit-country').value = userProfile.country || "";
+                    document.getElementById('edit-dob').value = userProfile.dob || "";
+                    document.getElementById('edit-age').value = userProfile.age ? `${userProfile.age} yrs` : "";
+                    base64Image = userProfile.photoURL || "";
+                    
+                    if(currentRoomId === null && document.getElementById('screen-auth').classList.contains('active-screen')) {
+                        showScreen('screen-dashboard'); switchTab('play');
+                    }
                 });
             } else {
                 currentUser = null; userProfile = null;
+                document.getElementById('header-nav').style.display = 'none';
                 document.getElementById('user-nav').style.display = 'none';
-                document.getElementById('btn-action').innerText = "Log In";
+                document.getElementById('btn-action').innerText = "Sign In";
                 showScreen('screen-auth');
             }
         });
 
-        // ==========================================
-        // 2. PROFILE EDITING
-        // ==========================================
+        // Profile Management Functions
+        function calculateAge() {
+            const dobVal = document.getElementById('edit-dob').value;
+            if(!dobVal) return;
+            const dob = new Date(dobVal);
+            const diff = Date.now() - dob.getTime();
+            const ageDate = new Date(diff);
+            const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+            document.getElementById('edit-age').value = `${age} yrs`;
+        }
+
         function handleImageUpload(e) {
             const file = e.target.files[0]; if(!file) return;
-            if(file.size > 800000) return alert("Image too large (Max 800KB).");
+            if(file.size > 800000) return alert("File exceeds 800KB limits.");
             const reader = new FileReader();
             reader.onload = function(e) { base64Image = e.target.result; document.getElementById('edit-avatar-preview').src = base64Image; };
             reader.readAsDataURL(file);
@@ -552,26 +583,32 @@
             const newName = document.getElementById('edit-name').value.trim();
             const bio = document.getElementById('edit-bio').value.trim();
             const gender = document.getElementById('edit-gender').value;
-            const flag = document.getElementById('edit-country').value;
+            const country = document.getElementById('edit-country').value;
+            const dob = document.getElementById('edit-dob').value;
+            
+            let ageNum = "";
+            if(dob) {
+                const ageVal = new Date(Date.now() - new Date(dob).getTime());
+                ageNum = Math.abs(ageVal.getUTCFullYear() - 1970);
+            }
+
             if(newName && currentUser) { 
-                db.ref('users/' + currentUser.uid).update({ displayName: newName, photoURL: base64Image, bio: bio, gender: gender, flag: flag }); 
-                showNoti("Profile Saved!"); 
+                db.ref('users/' + currentUser.uid).update({ displayName: newName, photoURL: base64Image, bio: bio, gender: gender, country: country, dob: dob, age: ageNum }); 
+                showNoti("Profile Updated."); 
             }
         }
 
-        // ==========================================
-        // 3. FRIENDS SYSTEM
-        // ==========================================
+        // Friends System Handlers
         function sendFriendRequest() {
             const target = document.getElementById('friend-search').value.trim().toLowerCase();
             if(!target) return;
-            if(target === userProfile.username.toLowerCase()) return alert("You cannot send a friend request to yourself.");
+            if(target === userProfile.username.toLowerCase()) return alert("Self-request is not permitted.");
 
             db.ref('usernames/' + target).once('value', snap => {
                 if(snap.exists()) {
                     db.ref(`friendRequests/${snap.val()}/${currentUser.uid}`).set({ uid: currentUser.uid, username: userProfile.username, photoURL: userProfile.photoURL });
-                    showNoti("Request Sent!"); document.getElementById('friend-search').value = "";
-                } else alert("User not found!");
+                    showNoti("Request Sent."); document.getElementById('friend-search').value = "";
+                } else alert("Target player not found.");
             });
         }
 
@@ -584,10 +621,10 @@
                     const req = child.val();
                     reqBox.innerHTML += `
                         <div class="list-item">
-                            <div class="list-info"><img src="${req.photoURL}"> <div style="font-weight:600; font-size:0.9rem;color:#fff;">${req.username}</div></div>
+                            <div class="list-info"><img src="${req.photoURL}"> <div style="font-weight:600; font-size:0.9rem;">${req.username}</div></div>
                             <div style="display:flex; gap:5px;">
-                                <button class="btn-small" style="background:var(--accent);" onclick="acceptRequest('${req.uid}', '${req.username}', '${req.photoURL}')">✔</button>
-                                <button class="btn-small" style="background:var(--danger);" onclick="rejectRequest('${req.uid}')">✖</button>
+                                <button class="btn-outline" style="padding:4px 10px; border-color:var(--accent); color:var(--accent);" onclick="acceptRequest('${req.uid}', '${req.username}', '${req.photoURL}')">Accept</button>
+                                <button class="btn-outline" style="padding:4px 10px; border-color:var(--danger); color:var(--danger);" onclick="rejectRequest('${req.uid}')">Reject</button>
                             </div>
                         </div>`;
                 });
@@ -597,20 +634,23 @@
                 if(!snap.exists()) return;
                 snap.forEach(child => {
                     const f = child.val();
-                    friendBox.innerHTML += `<div class="list-item"><div class="list-info"><img src="${f.photoURL}"> <div style="font-weight:600; font-size:0.9rem;color:#fff;">${f.username}</div></div></div>`;
+                    friendBox.innerHTML += `<div class="list-item"><div class="list-info"><img src="${f.photoURL}"> <div style="font-weight:600; font-size:0.9rem;">${f.username}</div></div></div>`;
                 });
             });
         }
         function acceptRequest(uid, username, photoURL) {
             db.ref(`friends/${currentUser.uid}/${uid}`).set({ uid, username, photoURL });
             db.ref(`friends/${uid}/${currentUser.uid}`).set({ uid: currentUser.uid, username: userProfile.username, photoURL: userProfile.photoURL });
-            rejectRequest(uid); showNoti("Friend Added!");
+            rejectRequest(uid); showNoti("Friend Added.");
         }
         function rejectRequest(uid) { db.ref(`friendRequests/${currentUser.uid}/${uid}`).remove(); }
 
-        // ==========================================
-        // 4. MATCHMAKING (RANDOM & PRIVATE)
-        // ==========================================
+        // Matchmaking Engine
+        function extractFlag(countryString) {
+            if(!countryString) return "";
+            return countryString.split(' ')[0] || "";
+        }
+
         function createRoom() {
             if(!currentUser) return;
             const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -618,12 +658,13 @@
             
             db.ref('rooms/' + roomId).set({
                 board: ["", "", "", "", "", "", "", "", ""], turn: "X", status: "waiting", type: "private",
-                playerX: { id: currentUser.uid, name: userProfile.displayName, photoURL: userProfile.photoURL, flag: userProfile.flag || "" }
+                playerX: { id: currentUser.uid, name: userProfile.displayName, photoURL: userProfile.photoURL, flag: extractFlag(userProfile.country) }
             }).then(() => { myRole = "X"; enterGameScreen(roomId); });
         }
 
         function findRandomMatch() {
             if(!currentUser) return;
+            
             db.ref('rooms').orderByChild('status').equalTo('waiting').once('value', snap => {
                 let foundRoom = null;
                 if(snap.exists()) {
@@ -637,7 +678,7 @@
                     isBotMatch = false; pointsAwarded = false; matchType = "random"; myRole = "O";
                     db.ref('rooms/' + foundRoom).update({
                         status: "active",
-                        playerO: { id: currentUser.uid, name: userProfile.displayName, photoURL: userProfile.photoURL, flag: userProfile.flag || "" }
+                        playerO: { id: currentUser.uid, name: userProfile.displayName, photoURL: userProfile.photoURL, flag: extractFlag(userProfile.country) }
                     });
                     enterGameScreen(foundRoom);
                 } else {
@@ -645,7 +686,7 @@
                     isBotMatch = false; pointsAwarded = false; matchType = "random"; myRole = "X";
                     db.ref('rooms/' + roomId).set({
                         board: ["", "", "", "", "", "", "", "", ""], turn: "X", status: "waiting", type: "random",
-                        playerX: { id: currentUser.uid, name: userProfile.displayName, photoURL: userProfile.photoURL, flag: userProfile.flag || "" }
+                        playerX: { id: currentUser.uid, name: userProfile.displayName, photoURL: userProfile.photoURL, flag: extractFlag(userProfile.country) }
                     }).then(() => { enterGameScreen(roomId); });
                 }
             });
@@ -656,20 +697,20 @@
             if(code) {
                 db.ref('rooms/' + code).once('value', snap => {
                     const data = snap.val();
-                    if(!data) return alert("Invalid Room Code");
-                    if(data.status !== "waiting" && data.playerX.id !== currentUser.uid) return alert("Room Full or Active");
+                    if(!data) return alert("Room not found.");
+                    if(data.status !== "waiting" && data.playerX.id !== currentUser.uid) return alert("Room occupied or active.");
                     
                     isBotMatch = false; pointsAwarded = false; matchType = "private";
                     if(data.playerX.id !== currentUser.uid) {
                         myRole = "O";
-                        db.ref('rooms/' + code).update({ status: "active", playerO: { id: currentUser.uid, name: userProfile.displayName, photoURL: userProfile.photoURL, flag: userProfile.flag || "" } });
+                        db.ref('rooms/' + code).update({ status: "active", playerO: { id: currentUser.uid, name: userProfile.displayName, photoURL: userProfile.photoURL, flag: extractFlag(userProfile.country) } });
                     } else { myRole = "X"; }
                     enterGameScreen(code);
                 });
             }
         }
 
-        function copyInviteLink() { navigator.clipboard.writeText(currentRoomId); showNoti("Code Copied!"); }
+        function copyInviteLink() { navigator.clipboard.writeText(currentRoomId); showNoti("Code Copied."); }
 
         function enterGameScreen(roomId) {
             currentRoomId = roomId;
@@ -680,10 +721,10 @@
             document.getElementById('my-symbol').innerText = myRole;
             document.getElementById('my-name-game').innerText = userProfile.displayName;
             document.getElementById('my-avatar').src = userProfile.photoURL;
-            document.getElementById('my-flag').innerText = userProfile.flag || "";
+            document.getElementById('my-flag').innerText = extractFlag(userProfile.country);
             
             document.getElementById('end-actions').style.display = 'none';
-            document.getElementById('chat-messages').innerHTML = '<div style="text-align: center; color: var(--border); font-size: 0.75rem; margin-top:10px;">Chat secured.</div>';
+            document.getElementById('chat-messages').innerHTML = '<div style="text-align: center; color: var(--border); font-size: 0.75rem;">Match chat initiated.</div>';
             document.getElementById('hint-btn').style.display = isBotMatch ? 'block' : 'none';
             document.getElementById('chat-col-wrapper').style.display = isBotMatch ? 'none' : 'flex';
             
@@ -695,7 +736,6 @@
                 currentRoomRef = db.ref('rooms/' + roomId);
                 currentRoomRef.on('value', syncMultiplayerState);
                 
-                // Live Chat Listener
                 db.ref('rooms/' + roomId + '/chat').on('child_added', snap => {
                     const msg = snap.val(); const isSelf = msg.uid === currentUser.uid;
                     const chatBox = document.getElementById('chat-messages');
@@ -719,7 +759,7 @@
             currentTurn = data.turn; gameActive = data.status === "active";
 
             const oppData = myRole === "X" ? data.playerO : data.playerX;
-            document.getElementById('opp-name').innerText = oppData ? oppData.name : "Searching for player...";
+            document.getElementById('opp-name').innerText = oppData ? oppData.name : "Searching...";
             document.getElementById('opp-avatar').src = oppData ? oppData.photoURL : "https://ui-avatars.com/api/?name=O";
             document.getElementById('opp-flag').innerText = oppData ? (oppData.flag || "") : "";
             
@@ -730,7 +770,7 @@
             }
             
             updateBoardVisuals(); updateTurnHighlight();
-            if(data.status === "rematch_requested" && data.rematchBy !== currentUser.uid) { showNoti("Opponent wants a rematch!"); }
+            if(data.status === "rematch_requested" && data.rematchBy !== currentUser.uid) { showNoti("Opponent requested rematch."); }
 
             if(data.status === "finished") {
                 gameActive = false;
@@ -738,12 +778,12 @@
                 document.getElementById('cancel-btn').style.display = 'none'; document.getElementById('resign-btn').style.display = 'none';
                 
                 if(data.winner === currentUser.uid || data.winner === myRole + "_WIN") {
-                    showNoti("You Won! 🎉 (+2 Points)");
+                    showNoti("Victory (+2 PTS)");
                     if(!pointsAwarded) { pointsAwarded = true; db.ref('users/' + currentUser.uid + '/points').transaction(c => (c || 0) + 2); }
-                } else if(data.winner === "draw") { showNoti("Match Draw!"); }
-                else if(data.reason === "resigned" && data.winner !== currentUser.uid) { showNoti("Opponent Resigned. You win!"); }
-                else if(data.reason === "resigned" && data.winner === currentUser.uid) { showNoti("You Resigned."); }
-                else { showNoti("You Lost!"); }
+                } else if(data.winner === "draw") { showNoti("Match Draw."); }
+                else if(data.reason === "resigned" && data.winner !== currentUser.uid) { showNoti("Opponent Resigned."); }
+                else if(data.reason === "resigned" && data.winner === currentUser.uid) { showNoti("Resigned Match."); }
+                else { showNoti("Defeat."); }
             }
         }
 
@@ -758,7 +798,7 @@
             if(isBotMatch) {
                 currentTurn = myRole === "X" ? "O" : "X"; updateTurnHighlight();
                 if(status === "finished") { handleBotGameOver(winner); return; }
-                setTimeout(botMakeMove, 500); 
+                setTimeout(botMakeMove, 450); 
             } else {
                 db.ref('rooms/' + currentRoomId).update({ board: localBoard, turn: myRole === "X" ? "O" : "X", status: status, ...(winner && {winner}) });
             }
@@ -781,7 +821,6 @@
             return w.some(c => board[c[0]]===player && board[c[1]]===player && board[c[2]]===player);
         }
 
-        // Action Buttons
         function resignMatch() {
             if(!gameActive) return;
             if(isBotMatch) { handleBotGameOver("opp_win"); }
@@ -794,7 +833,7 @@
                 if(data.status === "rematch_requested" && data.rematchBy !== currentUser.uid) {
                     pointsAwarded = false; 
                     db.ref('rooms/' + currentRoomId).update({ board: ["", "", "", "", "", "", "", "", ""], turn: "X", status: "active", winner: null, reason: null });
-                } else { db.ref('rooms/' + currentRoomId).update({ status: "rematch_requested", rematchBy: currentUser.uid }); showNoti("Rematch requested..."); }
+                } else { db.ref('rooms/' + currentRoomId).update({ status: "rematch_requested", rematchBy: currentUser.uid }); showNoti("Rematch requested."); }
             });
         }
         function leaveMatch() {
@@ -803,7 +842,6 @@
             currentRoomId = null; showScreen('screen-dashboard');
         }
 
-        // Chat & Emojis
         function sendChatMessage() {
             const input = document.getElementById('chat-input'); const msg = input.value.trim();
             if(!msg || !currentRoomId) return;
@@ -815,9 +853,7 @@
             db.ref('rooms/' + currentRoomId + '/chat').push({ uid: currentUser.uid, name: userProfile.displayName, msg: emoji });
         }
 
-        // ==========================================
-        // 5. AI BOT & HINT ENGINE
-        // ==========================================
+        // AI Engine Logic
         function startBotMatch(difficulty) {
             isBotMatch = true; botDifficulty = difficulty; pointsAwarded = false;
             currentRoomId = "BOT_ROOM"; myRole = "X"; currentTurn = "X"; gameActive = true;
@@ -828,7 +864,7 @@
             document.getElementById('opp-symbol').innerText = "O";
             document.getElementById('opp-name').innerText = difficulty.toUpperCase() + " BOT";
             document.getElementById('opp-avatar').src = "https://ui-avatars.com/api/?name=B&background=da3633&color=fff";
-            document.getElementById('opp-flag').innerText = "🤖";
+            document.getElementById('opp-flag').innerText = "";
             
             document.getElementById('end-actions').style.display = 'none';
             document.getElementById('cancel-btn').style.display = 'none';
@@ -872,10 +908,10 @@
             document.getElementById('end-actions').style.display = 'flex';
             document.getElementById('resign-btn').style.display = 'none';
             
-            if(winner === "draw") showNoti("Match Draw!");
-            else if(winner === "opp_win") showNoti("You Resigned.");
-            else if(winner === "BOT") showNoti("Bot Won!");
-            else { showNoti("You Won! 🎉"); }
+            if(winner === "draw") showNoti("Match Draw.");
+            else if(winner === "opp_win") showNoti("Resigned.");
+            else if(winner === "BOT") showNoti("Defeat.");
+            else { showNoti("Victory."); }
         }
 
         function getBestMove(board, player) {
